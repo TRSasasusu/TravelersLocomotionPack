@@ -1,0 +1,10 @@
+ManifestFileVersion: 0
+CRC: 1181018408
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: pickupchert
+      Dependencies: {}
+    Info_1:
+      Name: travelerslocomotions
+      Dependencies: {}
