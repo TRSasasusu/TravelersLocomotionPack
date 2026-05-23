@@ -8,6 +8,7 @@ using UnityEngine;
 namespace TravelersLocomotionPack {
     public class LocomotionAPI : ILocomotion {
         Chert _chert;
+        Gabbro _gabbro;
 
         public void RiebeckStandUp() {
             throw new NotImplementedException();
@@ -24,6 +25,19 @@ namespace TravelersLocomotionPack {
 
         public void ChertEndOnFloor() {
             _chert.EndOnFloor();
+        }
+
+        public void GabbroInitialize(GameObject gabbro) {
+            _gabbro = gabbro.AddComponent<Gabbro>();
+            _gabbro.Initialize();
+        }
+
+        public void GabbroStandUp() {
+            _gabbro.StandUp();
+        }
+
+        public void GabbroMoveTo(Vector3 position) {
+            throw new NotImplementedException();
         }
     }
 }

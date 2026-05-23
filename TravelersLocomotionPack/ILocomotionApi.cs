@@ -14,5 +14,11 @@ namespace TravelersLocomotionPack {
         public void ChertSitDown();
 
         public void ChertEndOnFloor();
+
+        public void GabbroInitialize(GameObject gabbro);
+
+        public void GabbroStandUp();
+
+        public void GabbroMoveTo(Vector3 position);
     }
 }

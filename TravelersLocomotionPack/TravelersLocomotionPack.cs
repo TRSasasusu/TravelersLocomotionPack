@@ -8,6 +8,7 @@ namespace TravelersLocomotionPack {
 
         public static RuntimeAnimatorController RiebeckAnimatorController { get; private set; }
         public static RuntimeAnimatorController ChertAnimatorController { get; private set; }
+        public static RuntimeAnimatorController GabbroAnimatorController { get; private set; }
 
         public static void Log(string text, MessageType messageType = MessageType.Message) {
             Instance.ModHelper.Console.WriteLine(text, messageType);
@@ -37,6 +38,7 @@ namespace TravelersLocomotionPack {
             var bundle = ModHelper.Assets.LoadBundle("assets/assetbundles/travelerslocomotions");
             RiebeckAnimatorController = bundle.LoadAsset<RuntimeAnimatorController>("Assets/MyAssets/Animators/riebeck/riebeck.controller");
             ChertAnimatorController = bundle.LoadAsset<RuntimeAnimatorController>("Assets/MyAssets/Animators/chert/chert.controller");
+            GabbroAnimatorController = bundle.LoadAsset<RuntimeAnimatorController>("Assets/MyAssets/Animators/gabbro/gabbro.controller");
             Log($"{RiebeckAnimatorController}");
 
             // Example of accessing game code.

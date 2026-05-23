@@ -31,6 +31,14 @@
     <Folder Include="assets\assetbundles\" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="DOTween">
+      <HintPath>Libs\DOTween\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="NewHorizons">
+      <HintPath>Libs\xen.NewHorizons\NewHorizons.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <None Update="assets\assetbundles\travelerslocomotions">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
