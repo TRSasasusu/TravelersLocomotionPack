@@ -1,5 +1,7 @@
-﻿using OWML.Common;
+﻿using HarmonyLib;
+using OWML.Common;
 using OWML.ModHelper;
+using System.Reflection;
 using UnityEngine;
 
 namespace TravelersLocomotionPack {
@@ -29,6 +31,7 @@ namespace TravelersLocomotionPack {
         //}
         private void Awake() {
             Instance = this;
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
         }
 
         private void Start() {

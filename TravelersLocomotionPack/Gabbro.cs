@@ -8,6 +8,8 @@ using DG.Tweening;
 
 namespace TravelersLocomotionPack {
     public class Gabbro : MonoBehaviour {
+        public static bool IsGabbroStanding { get; private set; }
+
         Animator _animator;
         Vector3? _targetPosition = null;
 
@@ -23,6 +25,8 @@ namespace TravelersLocomotionPack {
 
             transform.DOLocalMove(new Vector3(0.5932f, 0.131f, 0), 1.5f);
             transform.DOLocalRotate(new Vector3(0, 91.6766f, 0), 1.5f);
+
+            IsGabbroStanding = true;
         }
 
         public void MoveTo(Vector3 position) {
