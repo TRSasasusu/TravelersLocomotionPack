@@ -7,6 +7,7 @@ using UnityEngine;
 namespace TravelersLocomotionPack {
     public class TravelersLocomotionPack : ModBehaviour {
         public static TravelersLocomotionPack Instance { get; private set; }
+        public INewHorizons NewHorizons;
 
         public static RuntimeAnimatorController RiebeckAnimatorController { get; private set; }
         public static RuntimeAnimatorController ChertAnimatorController { get; private set; }
@@ -38,6 +39,9 @@ namespace TravelersLocomotionPack {
             // Starting here, you'll have access to OWML's mod helper.
             ModHelper.Console.WriteLine($"{nameof(TravelersLocomotionPack)} is loaded!", MessageType.Success);
 
+            NewHorizons = ModHelper.Interaction.TryGetModApi<INewHorizons>("xen.NewHorizons");
+            NewHorizons.LoadConfigs(this);
+
             var bundle = ModHelper.Assets.LoadBundle("assets/assetbundles/travelerslocomotions");
             RiebeckAnimatorController = bundle.LoadAsset<RuntimeAnimatorController>("Assets/MyAssets/Animators/riebeck/riebeck.controller");
             ChertAnimatorController = bundle.LoadAsset<RuntimeAnimatorController>("Assets/MyAssets/Animators/chert/chert.controller");
@@ -45,9 +49,16 @@ namespace TravelersLocomotionPack {
             Log($"{RiebeckAnimatorController}");
 
             // Example of accessing game code.
+            ModifyObjects modifyObjects = null;
             LoadManager.OnCompleteSceneLoad += (scene, loadScene) => {
                 if (loadScene != OWScene.SolarSystem) return;
                 ModHelper.Console.WriteLine("Loaded into solar system!", MessageType.Success);
+
+                if(modifyObjects != null) {
+                    modifyObjects.DestroyResources();
+                }
+                modifyObjects = new ModifyObjects();
+                modifyObjects.Initialize();
             };
         }
     }

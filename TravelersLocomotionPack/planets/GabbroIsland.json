@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/body_schema.json",
+  "name": "GabbroIsland",
+  "Props": {
+    "details": [
+      //{
+      //  "path": "GabbroIsland_Body/Sector_GabbroIsland/Interactables_GabbroIsland/Traveller_HEA_Gabbro/Traveller_HEA_Gabbro_ANIM_IdleFlute",
+      //  "parentPath": "Sector_GabbroIsland/Interactables_GabbroIsland/Traveller_HEA_Gabbro",
+      //  "isRelativeToParent": true,
+      //  "keepLoaded": true,
+      //  "rename": "Traveller_HEA_Gabbro_ANIM_IdleFlute_LP",
+      //  "hasPhysics": true,
+      //  //"physicsMass": 1,
+      //  //"physicsSuspendUntilImpact": true
+      //}
+    ]
+  }
+}
