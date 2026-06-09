@@ -75,6 +75,7 @@ namespace TravelersLocomotionPack {
             }
 
             obj = obj.transform.parent.gameObject;
+            //GameObject.Destroy(obj.GetComponent<DynamicForceDetector>());
             var alignmentForceDetector = obj.AddComponent<AlignmentForceDetector>();
             var alignWithForce = obj.AddComponent<AlignWithForce>();
             alignWithForce._adjustedSlerpRate = 1;

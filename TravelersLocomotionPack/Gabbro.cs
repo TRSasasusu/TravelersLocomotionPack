@@ -15,6 +15,7 @@ namespace TravelersLocomotionPack {
 
         const float Speed = 1f;
 
+        DynamicForceDetector _dynamicForceDetector;
         AlignmentForceDetector _alignmentForceDetector;
         AlignWithForce _alignWithForce;
         Animator _animator;
@@ -30,9 +31,10 @@ namespace TravelersLocomotionPack {
             _gabbroTravelerController = transform.parent.GetComponent<GabbroTravelerController>();
 
             _alignmentForceDetector = GetComponentInChildren<AlignmentForceDetector>();
-            _collidersForForceVolumes = new Collider[10];
-            var numColliders = Physics.OverlapSphereNonAlloc(transform.position, 1, _collidersForForceVolumes);
-            _alignmentForceDetector._activeVolumes = _collidersForForceVolumes.Take(numColliders).Where(c => c.GetComponent<ForceVolume>() != null).Select(v => v.GetComponent<EffectVolume>()).ToList();
+            _dynamicForceDetector = GetComponentInChildren<DynamicForceDetector>();
+            //_collidersForForceVolumes = new Collider[10];
+            //var numColliders = Physics.OverlapSphereNonAlloc(transform.position, 1, _collidersForForceVolumes);
+            //_alignmentForceDetector._activeVolumes = _collidersForForceVolumes.Take(numColliders).Where(c => c.GetComponent<ForceVolume>() != null).Select(v => v.GetComponent<EffectVolume>()).ToList();
 
             Destroy(GetComponent<SphereCollider>());
             var capsuleCollider = gameObject.AddComponent<CapsuleCollider>();
@@ -79,11 +81,10 @@ namespace TravelersLocomotionPack {
         void FixedUpdate() {
             if(_targetPosition.HasValue) {
                 transform.LookAt(_targetPosition.Value);
-                _owRigidbody.SetVelocity((_targetPosition.Value - transform.position).normalized * Speed);
+                _owRigidbody.AddVelocityChange((_targetPosition.Value - transform.position).normalized * Speed);
                 _animator.SetFloat("Walk", Speed);
                 if (Vector3.Distance(transform.position, _targetPosition.Value) < 0.1f) {
                     _targetPosition = null;
-                    _owRigidbody.SetVelocity(Vector3.zero);
                 }
             }
             else {
@@ -96,6 +97,7 @@ namespace TravelersLocomotionPack {
                 //    TravelersLocomotionPack.Log($"Collider: {c?.name}");
                 //}
                 //_alignmentForceDetector._activeVolumes = _collidersForForceVolumes.Take(numColliders).Where(c => c.GetComponent<ForceVolume>() != null).Select(v => v.GetComponent<EffectVolume>()).ToList();
+                _alignmentForceDetector._activeVolumes = _dynamicForceDetector._activeVolumes;
                 _alignmentForceDetector._dirty = true;
             }
         }
