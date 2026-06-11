@@ -13,7 +13,9 @@ namespace TravelersLocomotionPack {
         public static bool IsGabbroStanding { get; private set; }
         public static GameObject _gabbroLPBody;
 
-        const float Speed = 1f;
+        float _speed = 2f;
+        float _rotationSpeed = 5f;
+        float _rotationDamping = 0.1f;
 
         DynamicForceDetector _dynamicForceDetector;
         AlignmentForceDetector _alignmentForceDetector;
@@ -80,12 +82,30 @@ namespace TravelersLocomotionPack {
 
         void FixedUpdate() {
             if(_targetPosition.HasValue) {
-                transform.LookAt(_targetPosition.Value);
-                _owRigidbody.AddVelocityChange((_targetPosition.Value - transform.position).normalized * Speed);
-                _animator.SetFloat("Walk", Speed);
-                if (Vector3.Distance(transform.position, _targetPosition.Value) < 0.1f) {
+                RaycastHit hit;
+                if(Physics.Raycast(transform.position, -transform.up, out hit, 0.7f)) {
+                    TravelersLocomotionPack.Log($"Grounded on: {hit.collider.name}");
+                    // grounded
+                    var referredRigidbody = hit.collider.GetComponentInParent<OWRigidbody>();
+                    if(referredRigidbody) { 
+                        var referredVelocity = referredRigidbody.GetPointVelocity(transform.position);
+                        _owRigidbody.SetVelocity(referredVelocity + (_targetPosition.Value - transform.position).normalized * _speed);
+                    }
+                }
+                //transform.LookAt(_targetPosition.Value);
+                //_owRigidbody.AddVelocityChange((_targetPosition.Value - transform.position).normalized * Speed);
+                _animator.SetFloat("Walk", _speed);
+                if (Vector3.Distance(transform.position, _targetPosition.Value) < 0.5f) {
                     _targetPosition = null;
                 }
+
+                var lookDirection = _targetPosition.Value - transform.position;
+                var cross = Vector3.Cross(transform.forward, lookDirection.normalized);
+                var torque = cross * _rotationSpeed;
+                torque -= _owRigidbody.GetAngularVelocity() * _rotationDamping;
+                //_owRigidbody.AddTorque(torque);
+                TravelersLocomotionPack.Log($"Torque: {torque}");
+                _owRigidbody.AddAngularVelocityChange(torque);
             }
             else {
                 _animator.SetFloat("Walk", 0);
