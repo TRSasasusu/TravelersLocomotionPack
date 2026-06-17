@@ -61,8 +61,8 @@ namespace TravelersLocomotionPack {
             _gabbro.StandUp();
         }
 
-        public void GabbroMoveTo(Vector3 position) {
-            throw new NotImplementedException();
+        public void GabbroMoveTo(Transform target, float radius, float speed) {
+            _gabbro.MoveTo(target, radius, speed);
         }
 
         IEnumerator SetAlignment(GameObject obj, Action<GameObject> callback) {
