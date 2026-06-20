@@ -55,14 +55,22 @@ namespace TravelersLocomotionPack {
             });
         }
 
+        public bool GabbroIsInitialized() {
+            return _gabbro != null;
+        }
+
+        public GameObject GetGabbro() {
+            return _gabbro.gameObject;
+        }
+
         public void GabbroStandUp() {
             _originalGabbro.SetActive(false);
             _gabbro.gameObject.SetActive(true);
             _gabbro.StandUp();
         }
 
-        public void GabbroMoveTo(Transform target, float radius, float speed) {
-            _gabbro.MoveTo(target, radius, speed);
+        public void GabbroMoveTo(Transform target, float radius, float speed, Vector3 offset) {
+            _gabbro.MoveTo(target, radius, speed, offset);
         }
 
         IEnumerator SetAlignment(GameObject obj, Action<GameObject> callback) {

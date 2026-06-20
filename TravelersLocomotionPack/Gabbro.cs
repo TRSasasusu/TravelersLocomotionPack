@@ -23,6 +23,7 @@ namespace TravelersLocomotionPack {
         Transform _target;
         float _targetRadius;
         float _targetSpeed;
+        Vector3 _targetOffset;
         GabbroTravelerController _gabbroTravelerController;
         OWRigidbody _owRigidbody;
 
@@ -68,10 +69,11 @@ namespace TravelersLocomotionPack {
             });
         }
 
-        public void MoveTo(Transform targetTransform, float radius, float speed) {
+        public void MoveTo(Transform targetTransform, float radius, float speed, Vector3 offset) {
             _target = targetTransform;
             _targetRadius = radius;
             _targetSpeed = speed;
+            _targetOffset = offset;
         }
 
         void Update() {
@@ -93,11 +95,11 @@ namespace TravelersLocomotionPack {
                     var referredRigidbody = hit.collider.GetComponentInParent<OWRigidbody>();
                     if(referredRigidbody) { 
                         var referredVelocity = referredRigidbody.GetPointVelocity(transform.position);
-                        _owRigidbody.SetVelocity(referredVelocity + (_target.position - transform.position).normalized * _targetSpeed);
+                        _owRigidbody.SetVelocity(referredVelocity + (_target.position + _targetOffset - transform.position).normalized * _targetSpeed);
                     }
                 }
 
-                var lookDirection = _target.position - transform.position;
+                var lookDirection = _target.position + _targetOffset - transform.position;
                 var cross = Vector3.Cross(transform.forward, lookDirection.normalized);
                 var torque = cross * _rotationSpeed;
                 torque -= _owRigidbody.GetAngularVelocity() * _rotationDamping;
@@ -108,7 +110,7 @@ namespace TravelersLocomotionPack {
                 //transform.LookAt(_targetPosition.Value);
                 //_owRigidbody.AddVelocityChange((_targetPosition.Value - transform.position).normalized * Speed);
                 _animator.SetFloat("Walk", _targetSpeed);
-                if (Vector3.Distance(transform.position, _target.position) < _targetRadius) {
+                if (Vector3.Distance(transform.position, _target.position + _targetOffset) < _targetRadius) {
                     _target = null;
                 }
 
