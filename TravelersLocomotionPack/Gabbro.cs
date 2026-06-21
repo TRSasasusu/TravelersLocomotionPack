@@ -15,7 +15,7 @@ namespace TravelersLocomotionPack {
 
         float _speed = 2f;
         float _rotationSpeed = 5f;
-        float _rotationDamping = 0.1f;
+        float _rotationDamping = 1f;
 
         DynamicForceDetector _dynamicForceDetector;
         AlignmentForceDetector _alignmentForceDetector;
@@ -89,22 +89,26 @@ namespace TravelersLocomotionPack {
         void FixedUpdate() {
             if(_target) {
                 RaycastHit hit;
+                var direction = _target.position + _targetOffset - transform.position;
                 if(Physics.Raycast(transform.position + transform.up * 0.1f, -transform.up, out hit, 0.9f)) {
-                    TravelersLocomotionPack.Log($"Grounded on: {hit.collider.name}");
+                    //TravelersLocomotionPack.Log($"Grounded on: {hit.collider.name}");
                     // grounded
                     var referredRigidbody = hit.collider.GetComponentInParent<OWRigidbody>();
                     if(referredRigidbody) { 
                         var referredVelocity = referredRigidbody.GetPointVelocity(transform.position);
-                        _owRigidbody.SetVelocity(referredVelocity + (_target.position + _targetOffset - transform.position).normalized * _targetSpeed);
+                        var normal = hit.normal.normalized;
+                        direction -= Vector3.Dot(direction, normal) * normal;
+                        //_owRigidbody.SetVelocity(referredVelocity + (_target.position + _targetOffset - transform.position).normalized * _targetSpeed);
+                        _owRigidbody.SetVelocity(referredVelocity + direction.normalized * _targetSpeed);
                     }
                 }
 
-                var lookDirection = _target.position + _targetOffset - transform.position;
+                var lookDirection = direction;//_target.position + _targetOffset - transform.position;
                 var cross = Vector3.Cross(transform.forward, lookDirection.normalized);
                 var torque = cross * _rotationSpeed;
                 torque -= _owRigidbody.GetAngularVelocity() * _rotationDamping;
                 //_owRigidbody.AddTorque(torque);
-                TravelersLocomotionPack.Log($"Torque: {torque}");
+                //TravelersLocomotionPack.Log($"Torque: {torque}");
                 _owRigidbody.AddAngularVelocityChange(torque);
 
                 //transform.LookAt(_targetPosition.Value);

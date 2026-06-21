@@ -67,6 +67,31 @@ namespace TravelersLocomotionPack {
             _originalGabbro.SetActive(false);
             _gabbro.gameObject.SetActive(true);
             _gabbro.StandUp();
+
+            var audiosignal = _originalGabbro.GetComponentInChildren<AudioSignal>(true);
+            if(!audiosignal && _originalGabbro.transform.parent) {
+                audiosignal = _originalGabbro.transform.parent.GetComponentInChildren<AudioSignal>(true);
+                if(!audiosignal && _originalGabbro.transform.parent.parent) {
+                    audiosignal = _originalGabbro.transform.parent.parent.GetComponentInChildren<AudioSignal>(true);
+                }
+            }
+            if(audiosignal) {
+                audiosignal.transform.parent = _gabbro.transform;
+                audiosignal.transform.localPosition = new Vector3(0, 1.4859f, 0.6699f);
+                audiosignal.transform.localEulerAngles = Vector3.zero;
+            }
+
+            var conversationZone = _originalGabbro.GetComponentInChildren<CharacterDialogueTree>(true);
+            if(!conversationZone && _originalGabbro.transform.parent) {
+                conversationZone = _originalGabbro.transform.parent.GetComponentInChildren<CharacterDialogueTree>(true);
+                TravelersLocomotionPack.Log($"conversationZone: {conversationZone}");
+            }
+            if(conversationZone != null) {
+                conversationZone.transform.parent = _gabbro.transform;
+                conversationZone.transform.localPosition = Vector3.zero;
+                conversationZone.transform.localEulerAngles = Vector3.zero;
+                TravelersLocomotionPack.Log($"conversationZone is moved!");
+            }
         }
 
         public void GabbroMoveTo(Transform target, float radius, float speed, Vector3 offset) {
