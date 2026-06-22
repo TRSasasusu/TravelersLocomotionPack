@@ -76,6 +76,21 @@ namespace TravelersLocomotionPack {
             _targetOffset = offset;
         }
 
+        public void MoveStop() {
+            if(!_target) {
+                return;
+            }
+
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position + transform.up * 0.1f, -transform.up, out hit, 0.9f)) {
+                var referredRigidbody = hit.collider.GetComponentInParent<OWRigidbody>();
+                if (referredRigidbody) {
+                    _owRigidbody.SetAngularVelocity(referredRigidbody.GetAngularVelocity());
+                }
+            }
+            _target = null;
+        }
+
         void Update() {
             if(!_animator.enabled) {
                 _animator.enabled = true;
@@ -90,6 +105,7 @@ namespace TravelersLocomotionPack {
             if(_target) {
                 RaycastHit hit;
                 var direction = _target.position + _targetOffset - transform.position;
+                Vector3? baseAngularVelocity = null;
                 if(Physics.Raycast(transform.position + transform.up * 0.1f, -transform.up, out hit, 0.9f)) {
                     //TravelersLocomotionPack.Log($"Grounded on: {hit.collider.name}");
                     // grounded
@@ -100,6 +116,8 @@ namespace TravelersLocomotionPack {
                         direction -= Vector3.Dot(direction, normal) * normal;
                         //_owRigidbody.SetVelocity(referredVelocity + (_target.position + _targetOffset - transform.position).normalized * _targetSpeed);
                         _owRigidbody.SetVelocity(referredVelocity + direction.normalized * _targetSpeed);
+
+                        baseAngularVelocity = referredRigidbody.GetAngularVelocity();
                     }
                 }
 
@@ -116,6 +134,9 @@ namespace TravelersLocomotionPack {
                 _animator.SetFloat("Walk", _targetSpeed);
                 if (Vector3.Distance(transform.position, _target.position + _targetOffset) < _targetRadius) {
                     _target = null;
+                    if(baseAngularVelocity != null) {
+                        _owRigidbody.SetAngularVelocity(baseAngularVelocity.Value);
+                    }
                 }
 
             }

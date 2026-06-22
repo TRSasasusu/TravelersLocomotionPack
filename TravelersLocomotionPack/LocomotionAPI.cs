@@ -84,14 +84,19 @@ namespace TravelersLocomotionPack {
             var conversationZone = _originalGabbro.GetComponentInChildren<CharacterDialogueTree>(true);
             if(!conversationZone && _originalGabbro.transform.parent) {
                 conversationZone = _originalGabbro.transform.parent.GetComponentInChildren<CharacterDialogueTree>(true);
-                TravelersLocomotionPack.Log($"conversationZone: {conversationZone}");
+                //TravelersLocomotionPack.Log($"conversationZone: {conversationZone}");
             }
             if(conversationZone != null) {
                 conversationZone.transform.parent = _gabbro.transform;
-                conversationZone.transform.localPosition = Vector3.zero;
+                conversationZone.transform.localPosition = new Vector3(0, 1.511f, 0);
                 conversationZone.transform.localEulerAngles = Vector3.zero;
-                TravelersLocomotionPack.Log($"conversationZone is moved!");
+                conversationZone.GetComponent<InteractReceiver>()._usableInShip = true;
+                //TravelersLocomotionPack.Log($"conversationZone is moved!");
             }
+        }
+
+        public void GabbroMoveStop() {
+            _gabbro.MoveStop();
         }
 
         public void GabbroMoveTo(Transform target, float radius, float speed, Vector3 offset) {
