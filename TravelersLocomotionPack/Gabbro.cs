@@ -26,6 +26,7 @@ namespace TravelersLocomotionPack {
         Vector3 _targetOffset;
         GabbroTravelerController _gabbroTravelerController;
         OWRigidbody _owRigidbody;
+        GameObject _jetpack;
 
         public void Initialize() {
             _animator = GetComponentInChildren<Animator>();
@@ -47,6 +48,37 @@ namespace TravelersLocomotionPack {
             _owRigidbody = GetComponent<OWRigidbody>();
 
             gameObject.AddComponent<SectorDetector>();
+
+            _jetpack = Instantiate(ModifyObjects.Instance.Jetpack);
+            _jetpack.transform.parent = transform;
+            _jetpack.transform.localPosition = new Vector3(0, 1.4834f, -0.3484f);
+            _jetpack.transform.localEulerAngles = new Vector3(0, 299.7281f, 0);
+            _jetpack.GetComponent<MeshRenderer>().enabled = true;
+            _jetpack.SetActive(false);
+
+            var vfx = Instantiate(ModifyObjects.Instance.PlayerVFX);
+            Destroy(vfx.GetComponent<PlayerParticlesController>());
+            foreach(var component in vfx.GetComponentsInChildren<ThrusterWashController>(true)) {
+                Destroy(component);
+            }
+            foreach(var component in vfx.GetComponentsInChildren<ThrusterLightTracker>(true)) {
+                Destroy(component);
+            }
+            foreach(var component in vfx.GetComponentsInChildren<ThrusterFlameColorSwapper>(true)) {
+                Destroy(component);
+            }
+            foreach(var component in vfx.GetComponentsInChildren<ThrusterFlameController>(true)) {
+                Destroy(component);
+            }
+            foreach(var component in vfx.GetComponentsInChildren<ThrusterParticlesBehavior>(true)) {
+                Destroy(component);
+            }
+            foreach(var component in vfx.GetComponentsInChildren<RelativisticParticleSystem>(true)) {
+                Destroy(component);
+            }
+            vfx.transform.parent = _jetpack.transform;
+            vfx.transform.localPosition = new Vector3(0.4202f, -0.2888f, 0.3999f);
+            vfx.transform.localEulerAngles = new Vector3(0, 42.6509f, 0);
         }
 
         public void StandUp() {

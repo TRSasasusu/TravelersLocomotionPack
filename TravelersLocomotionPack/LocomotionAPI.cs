@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using NewHorizons.Utility;
 using IEnumerator = System.Collections.IEnumerator;
 
 namespace TravelersLocomotionPack {
@@ -15,6 +16,7 @@ namespace TravelersLocomotionPack {
 
         GameObject _originalGabbro;
         Gabbro _gabbro;
+        //GameObject _originalJetpack;
 
         public void RiebeckStandUp() {
             throw new NotImplementedException();
@@ -40,6 +42,8 @@ namespace TravelersLocomotionPack {
             gabbroLP.name = gabbro.name + "_LP2";
             gabbroLP.AddComponent<NewHorizons.Components.AddPhysics>(); // this requires around 0.1 sec.
 
+            //var jetpack = TravelersLocomotionPack.Instance.NewHorizons.SpawnObject(TravelersLocomotionPack.Instance, gabbro)
+
             Coroutine coroutine = TravelersLocomotionPack.Instance.StartCoroutine(SetAlignment(gabbroLP, obj => {
                 obj.transform.parent = gabbro.transform.parent;
                 obj.transform.localPosition = Vector3.zero;
@@ -53,6 +57,8 @@ namespace TravelersLocomotionPack {
                     TravelersLocomotionPack.Instance.StopCoroutine(coroutine);
                 }
             });
+
+            //_originalJetpack = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_Village/Sector_LowerVillage/Props_LowerVillage/OtherComponentsGroup/Architecture_LowerVillage/OtherComponentsGroup/Village_UnderLaunchTowerProps/LaunchTowerSequoiaProps/WorkBench2/PlayerSuit_Jetpack (1)");
         }
 
         public bool GabbroIsInitialized() {
