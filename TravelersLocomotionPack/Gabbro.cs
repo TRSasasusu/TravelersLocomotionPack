@@ -52,7 +52,8 @@ namespace TravelersLocomotionPack {
             _jetpack = Instantiate(ModifyObjects.Instance.Jetpack);
             _jetpack.transform.parent = transform;
             _jetpack.transform.localPosition = new Vector3(0, 1.4834f, -0.3484f);
-            _jetpack.transform.localEulerAngles = new Vector3(0, 299.7281f, 0);
+            //_jetpack.transform.localEulerAngles = new Vector3(0, 299.7281f, 0);
+            _jetpack.transform.localEulerAngles = new Vector3(351.186f, 299.7281f, 11.0537f);
             _jetpack.GetComponent<MeshRenderer>().enabled = true;
             _jetpack.SetActive(false);
 
@@ -86,19 +87,25 @@ namespace TravelersLocomotionPack {
                 return;
             }
 
-            _gabbroTravelerController._animator = _animator;
+            var conversationZone = GetComponentInChildren<InteractReceiver>(true);
+            conversationZone.gameObject.SetActive(false);
+            Observable.NextFrame().Subscribe(_ => {
+                conversationZone.gameObject.SetActive(true);
 
-            _animator.SetTrigger("StandUp");
-            _animator.SetBool("NoHammock", true);
+                _gabbroTravelerController._animator = _animator;
 
-            transform.DOLocalMove(new Vector3(0.5932f, 0.131f, 0), 1.5f);
-            transform.DOLocalRotate(new Vector3(0, 91.6766f, 0), 1.5f);
+                _animator.SetTrigger("StandUp");
+                _animator.SetBool("NoHammock", true);
 
-            IsGabbroStanding = true;
+                transform.DOLocalMove(new Vector3(0.5932f, 0.131f, 0), 1.5f);
+                transform.DOLocalRotate(new Vector3(0, 91.6766f, 0), 1.5f);
 
-            Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => {
-                transform.parent = null;
-            });
+                IsGabbroStanding = true;
+
+                Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => {
+                    transform.parent = null;
+                }).AddTo(this);
+            }).AddTo(this);
         }
 
         public void MoveTo(Transform targetTransform, float radius, float speed, Vector3 offset) {
@@ -121,6 +128,7 @@ namespace TravelersLocomotionPack {
                 }
             }
             _target = null;
+            _jetpack.SetActive(false);
         }
 
         void Update() {
@@ -137,8 +145,16 @@ namespace TravelersLocomotionPack {
             if(_target) {
                 RaycastHit hit;
                 var direction = _target.position + _targetOffset - transform.position;
+
+                bool useJetpack = false;
+                var dot = Vector3.Dot(direction.normalized, transform.forward);
+                //TravelersLocomotionPack.Log($"Dot: {dot}");
+                if(dot < 1f/1.414f) {
+                    useJetpack = true;
+                }
+
                 Vector3? baseAngularVelocity = null;
-                if(Physics.Raycast(transform.position + transform.up * 0.1f, -transform.up, out hit, 0.9f)) {
+                if(!useJetpack && Physics.Raycast(transform.position + transform.up * 0.1f, -transform.up, out hit, 0.9f)) {
                     //TravelersLocomotionPack.Log($"Grounded on: {hit.collider.name}");
                     // grounded
                     var referredRigidbody = hit.collider.GetComponentInParent<OWRigidbody>();
@@ -150,6 +166,20 @@ namespace TravelersLocomotionPack {
                         _owRigidbody.SetVelocity(referredVelocity + direction.normalized * _targetSpeed);
 
                         baseAngularVelocity = referredRigidbody.GetAngularVelocity();
+
+                        _jetpack.SetActive(false);
+                    }
+                }
+                else {
+                    var referredRigidbody = _target.GetComponentInParent<OWRigidbody>();
+                    if(referredRigidbody) { 
+                        var referredVelocity = referredRigidbody.GetPointVelocity(transform.position);
+                        //_owRigidbody.SetVelocity(referredVelocity + (_target.position + _targetOffset - transform.position).normalized * _targetSpeed);
+                        _owRigidbody.SetVelocity(referredVelocity + direction.normalized * _targetSpeed);
+
+                        baseAngularVelocity = referredRigidbody.GetAngularVelocity();
+
+                        _jetpack.SetActive(true);
                     }
                 }
 
@@ -169,6 +199,7 @@ namespace TravelersLocomotionPack {
                     if(baseAngularVelocity != null) {
                         _owRigidbody.SetAngularVelocity(baseAngularVelocity.Value);
                     }
+                    _jetpack.SetActive(false);
                 }
 
             }

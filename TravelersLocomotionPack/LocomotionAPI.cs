@@ -72,7 +72,6 @@ namespace TravelersLocomotionPack {
         public void GabbroStandUp() {
             _originalGabbro.SetActive(false);
             _gabbro.gameObject.SetActive(true);
-            _gabbro.StandUp();
 
             var audiosignal = _originalGabbro.GetComponentInChildren<AudioSignal>(true);
             if(!audiosignal && _originalGabbro.transform.parent) {
@@ -99,6 +98,8 @@ namespace TravelersLocomotionPack {
                 conversationZone.GetComponent<InteractReceiver>()._usableInShip = true;
                 //TravelersLocomotionPack.Log($"conversationZone is moved!");
             }
+
+            _gabbro.StandUp();
         }
 
         public void GabbroMoveStop() {
