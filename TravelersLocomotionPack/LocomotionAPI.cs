@@ -97,6 +97,12 @@ namespace TravelersLocomotionPack {
                 conversationZone.transform.localEulerAngles = Vector3.zero;
                 conversationZone.GetComponent<InteractReceiver>()._usableInShip = true;
                 //TravelersLocomotionPack.Log($"conversationZone is moved!");
+
+                if(conversationZone._attentionPoint != null) {
+                    conversationZone._attentionPoint.transform.parent = _gabbro.transform;
+                    conversationZone._attentionPoint.transform.localPosition = new Vector3(0, 1.511f, 0);
+                    conversationZone._attentionPoint.transform.localEulerAngles = Vector3.zero;
+                }
             }
 
             _gabbro.StandUp();

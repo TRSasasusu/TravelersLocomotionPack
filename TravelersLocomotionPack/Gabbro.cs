@@ -10,12 +10,14 @@ using UniRx;
 
 namespace TravelersLocomotionPack {
     public class Gabbro : MonoBehaviour {
-        public static bool IsGabbroStanding { get; private set; }
+        public static bool IsGabbroStanding { get { return Instance._isStanding; } }
+        public static Gabbro Instance { get; private set; }
         public static GameObject _gabbroLPBody;
 
         float _speed = 2f;
         float _rotationSpeed = 5f;
         float _rotationDamping = 1f;
+        bool _isStanding;
 
         DynamicForceDetector _dynamicForceDetector;
         AlignmentForceDetector _alignmentForceDetector;
@@ -26,9 +28,25 @@ namespace TravelersLocomotionPack {
         Vector3 _targetOffset;
         GabbroTravelerController _gabbroTravelerController;
         OWRigidbody _owRigidbody;
+        Collider _conversationZone;
+
         GameObject _jetpack;
+        float _jetpackInitialDistanceToTarget = -1;
+        float _jetpackVelocityCoeff = 0.001f;
+        float _jetpackPosCoeff = 0.001f;
+        float _jetpackAccelCoeff = 0.001f;
+        MeshRenderer _jetpackUpThruster;
+        MeshRenderer _jetpackDownThruster;
+        MeshRenderer _jetpackLeftThruster;
+        MeshRenderer _jetpackRightThruster;
+        MeshRenderer _jetpackBackwardLeftThruster;
+        MeshRenderer _jetpackBackwardRightThruster;
+        MeshRenderer _jetpackForwardLeftThruster;
+        MeshRenderer _jetpackForwardRightThruster;
 
         public void Initialize() {
+            Instance = this;
+
             _animator = GetComponentInChildren<Animator>();
             _animator.runtimeAnimatorController = TravelersLocomotionPack.GabbroAnimatorController;
 
@@ -80,6 +98,14 @@ namespace TravelersLocomotionPack {
             vfx.transform.parent = _jetpack.transform;
             vfx.transform.localPosition = new Vector3(0.4202f, -0.2888f, 0.3999f);
             vfx.transform.localEulerAngles = new Vector3(0, 42.6509f, 0);
+            _jetpackUpThruster = vfx.transform.Find("Thrusters/UpThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
+            _jetpackDownThruster = vfx.transform.Find("Thrusters/DownThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
+            _jetpackLeftThruster = vfx.transform.Find("Thrusters/LeftThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
+            _jetpackRightThruster = vfx.transform.Find("Thrusters/RightThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
+            _jetpackBackwardLeftThruster = vfx.transform.Find("Thrusters/BackwardLeftThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
+            _jetpackBackwardRightThruster = vfx.transform.Find("Thrusters/BackwardRightThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
+            _jetpackForwardLeftThruster = vfx.transform.Find("Thrusters/ForwardLeftThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
+            _jetpackForwardRightThruster = vfx.transform.Find("Thrusters/ForwardRightThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
         }
 
         public void StandUp() {
@@ -100,11 +126,13 @@ namespace TravelersLocomotionPack {
                 transform.DOLocalMove(new Vector3(0.5932f, 0.131f, 0), 1.5f);
                 transform.DOLocalRotate(new Vector3(0, 91.6766f, 0), 1.5f);
 
-                IsGabbroStanding = true;
+                _isStanding = true;
 
                 Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => {
                     transform.parent = null;
                 }).AddTo(this);
+
+                _conversationZone = GetComponentInChildren<CharacterDialogueTree>(true).GetComponent<SphereCollider>();
             }).AddTo(this);
         }
 
@@ -125,15 +153,28 @@ namespace TravelersLocomotionPack {
                 var referredRigidbody = hit.collider.GetComponentInParent<OWRigidbody>();
                 if (referredRigidbody) {
                     _owRigidbody.SetAngularVelocity(referredRigidbody.GetAngularVelocity());
+                    //_owRigidbody.SetVelocity(referredRigidbody.GetPointVelocity(transform.position));
                 }
             }
+            else {
+                var referredRigidbody = _target.GetComponentInParent<OWRigidbody>();
+                if(referredRigidbody) {
+                    _owRigidbody.SetAngularVelocity(referredRigidbody.GetAngularVelocity());
+                    _owRigidbody.SetVelocity(referredRigidbody.GetPointVelocity(transform.position));
+                }
+            }
+
             _target = null;
             _jetpack.SetActive(false);
+            _jetpackInitialDistanceToTarget = -1;
         }
 
         void Update() {
             if(!_animator.enabled) {
                 _animator.enabled = true;
+            }
+            if(!_conversationZone.enabled) {
+                _conversationZone.enabled = true;
             }
             //if(_targetPosition.HasValue) {
             //    transform.LookAt(_targetPosition.Value);
@@ -168,16 +209,57 @@ namespace TravelersLocomotionPack {
                         baseAngularVelocity = referredRigidbody.GetAngularVelocity();
 
                         _jetpack.SetActive(false);
+
+                        _jetpackInitialDistanceToTarget = -1;
                     }
                 }
                 else {
                     var referredRigidbody = _target.GetComponentInParent<OWRigidbody>();
                     if(referredRigidbody) { 
-                        var referredVelocity = referredRigidbody.GetPointVelocity(transform.position);
-                        //_owRigidbody.SetVelocity(referredVelocity + (_target.position + _targetOffset - transform.position).normalized * _targetSpeed);
-                        _owRigidbody.SetVelocity(referredVelocity + direction.normalized * _targetSpeed);
+                        var diffPos = _target.position + _targetOffset - transform.position;
+                        diffPos -= diffPos.normalized * _targetRadius;
+                        var currentDistanceToTarget = diffPos.magnitude;
 
-                        baseAngularVelocity = referredRigidbody.GetAngularVelocity();
+                        if(_jetpackInitialDistanceToTarget < 0) {
+                            _jetpackInitialDistanceToTarget = currentDistanceToTarget;
+                        }
+
+                        var diffVelocity = referredRigidbody.GetPointVelocity(_target.position + _targetOffset) - _owRigidbody.GetVelocity();
+                        diffVelocity -= Vector3.Dot(diffVelocity, diffPos.normalized) * diffPos.normalized;
+
+                        var currentAccel = _dynamicForceDetector.GetForceAcceleration(); //_owRigidbody._currentAccel;
+                        //TravelersLocomotionPack.Log($"currentAccel: {currentAccel}");
+                        diffVelocity -= Vector3.Dot(diffVelocity, currentAccel.normalized) * currentAccel.normalized;
+
+                        Vector3 force = Vector3.zero;
+                        if(diffVelocity.magnitude > 0.5f) {
+                            force += diffVelocity * _jetpackVelocityCoeff;
+                        }
+
+                        if(currentDistanceToTarget > _jetpackInitialDistanceToTarget * 0.5f) {
+                            force += diffPos * _jetpackPosCoeff;
+                            force -= currentAccel * _jetpackAccelCoeff;
+                        }
+                        else {
+                            force -= diffPos * _jetpackPosCoeff;
+                        }
+
+                        _owRigidbody.AddForce(force);
+
+                        var normalizedForce = force.normalized;
+                        _jetpackUpThruster.enabled = Vector3.Dot(normalizedForce, transform.up) > 0;
+                        _jetpackDownThruster.enabled = Vector3.Dot(normalizedForce, transform.up) < 0;
+                        _jetpackLeftThruster.enabled = Vector3.Dot(normalizedForce, transform.right) < 0;
+                        _jetpackRightThruster.enabled = Vector3.Dot(normalizedForce, transform.right) > 0;
+                        _jetpackBackwardLeftThruster.enabled = Vector3.Dot(normalizedForce, transform.forward) > 0;
+                        _jetpackBackwardRightThruster.enabled = Vector3.Dot(normalizedForce, transform.forward) > 0;
+                        _jetpackForwardLeftThruster.enabled = Vector3.Dot(normalizedForce, transform.forward) < 0;
+                        _jetpackForwardRightThruster.enabled = Vector3.Dot(normalizedForce, transform.forward) < 0;
+
+                        ////_owRigidbody.SetVelocity(referredVelocity + (_target.position + _targetOffset - transform.position).normalized * _targetSpeed);
+                        //_owRigidbody.SetVelocity(referredVelocity + direction.normalized * _targetSpeed);
+
+                        //baseAngularVelocity = referredRigidbody.GetAngularVelocity();
 
                         _jetpack.SetActive(true);
                     }
@@ -195,11 +277,19 @@ namespace TravelersLocomotionPack {
                 //_owRigidbody.AddVelocityChange((_targetPosition.Value - transform.position).normalized * Speed);
                 _animator.SetFloat("Walk", _targetSpeed);
                 if (Vector3.Distance(transform.position, _target.position + _targetOffset) < _targetRadius) {
-                    _target = null;
                     if(baseAngularVelocity != null) {
                         _owRigidbody.SetAngularVelocity(baseAngularVelocity.Value);
                     }
+                    else {
+                        var referredRigidbody = _target.GetComponentInParent<OWRigidbody>();
+                        if(referredRigidbody) {
+                            //_owRigidbody.SetAngularVelocity(referredRigidbody.GetAngularVelocity());
+                            _owRigidbody.SetVelocity(referredRigidbody.GetPointVelocity(transform.position));
+                        }
+                    }
+                    _target = null;
                     _jetpack.SetActive(false);
+                    _jetpackInitialDistanceToTarget = -1;
                 }
 
             }
