@@ -10,10 +10,14 @@ using UniRx;
 
 namespace TravelersLocomotionPack {
     public class Gabbro : MonoBehaviour {
-        public static bool IsGabbroStanding { get { return Instance._isStanding; } }
+        public static bool IsGabbroStanding { get { return Instance != null && Instance._isStanding; } }
+        public static bool IsStopPlaying { get { return Instance != null && !Instance._playing; } }
         public static Gabbro Instance { get; private set; }
         public static GameObject _gabbroLPBody;
 
+        public AudioSignal AudioSignal { get; private set; }
+
+        bool _playing;
         float _speed = 2f;
         float _rotationSpeed = 5f;
         float _rotationDamping = 1f;
@@ -32,9 +36,9 @@ namespace TravelersLocomotionPack {
 
         GameObject _jetpack;
         float _jetpackInitialDistanceToTarget = -1;
-        float _jetpackVelocityCoeff = 0.001f;
-        float _jetpackPosCoeff = 0.001f;
-        float _jetpackAccelCoeff = 0.001f;
+        float _jetpackVelocityCoeff = 0.01f;
+        float _jetpackPosCoeff = 0.01f;
+        float _jetpackAccelCoeff = 0.01f;
         MeshRenderer _jetpackUpThruster;
         MeshRenderer _jetpackDownThruster;
         MeshRenderer _jetpackLeftThruster;
@@ -133,6 +137,7 @@ namespace TravelersLocomotionPack {
                 }).AddTo(this);
 
                 _conversationZone = GetComponentInChildren<CharacterDialogueTree>(true).GetComponent<SphereCollider>();
+                AudioSignal = GetComponentInChildren<AudioSignal>(true);
             }).AddTo(this);
         }
 
@@ -229,19 +234,20 @@ namespace TravelersLocomotionPack {
 
                         var currentAccel = _dynamicForceDetector.GetForceAcceleration(); //_owRigidbody._currentAccel;
                         //TravelersLocomotionPack.Log($"currentAccel: {currentAccel}");
-                        diffVelocity -= Vector3.Dot(diffVelocity, currentAccel.normalized) * currentAccel.normalized;
+                        //diffVelocity -= Vector3.Dot(diffVelocity, currentAccel.normalized) * currentAccel.normalized;
+                        currentAccel -= Vector3.Dot(currentAccel, diffPos.normalized) * diffPos.normalized;
 
                         Vector3 force = Vector3.zero;
                         if(diffVelocity.magnitude > 0.5f) {
-                            force += diffVelocity * _jetpackVelocityCoeff;
+                            force += diffVelocity.normalized * _jetpackVelocityCoeff;
                         }
 
                         if(currentDistanceToTarget > _jetpackInitialDistanceToTarget * 0.5f) {
-                            force += diffPos * _jetpackPosCoeff;
-                            force -= currentAccel * _jetpackAccelCoeff;
+                            force += diffPos.normalized * _jetpackPosCoeff;
+                            force -= currentAccel.normalized * _jetpackAccelCoeff;
                         }
                         else {
-                            force -= diffPos * _jetpackPosCoeff;
+                            force -= diffPos.normalized * _jetpackPosCoeff;
                         }
 
                         _owRigidbody.AddForce(force);
@@ -306,6 +312,21 @@ namespace TravelersLocomotionPack {
                 _alignmentForceDetector._activeVolumes = _dynamicForceDetector._activeVolumes;
                 _alignmentForceDetector._dirty = true;
             }
+        }
+
+        public void StopPlaying() {
+            _playing = false;
+            AudioSignal._active = false;
+            AudioSignal.GetOWAudioSource().FadeOut(0.5f, OWAudioSource.FadeOutCompleteAction.STOP, 0f);
+            _animator.SetTrigger("Talking");
+        }
+
+        public void StartPlaying() {
+            _playing = true;
+            AudioSignal._active = true;
+            AudioSignal.GetOWAudioSource().FadeIn(0.5f, false, false, 1f);
+            AudioSignal.GetOWAudioSource().timeSamples = 0;
+            _animator.SetTrigger("Playing");
         }
     }
 }

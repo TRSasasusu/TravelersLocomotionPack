@@ -116,6 +116,14 @@ namespace TravelersLocomotionPack {
             _gabbro.MoveTo(target, radius, speed, offset);
         }
 
+        public void GabbroStopPlaying() {
+            _gabbro.StopPlaying();
+        }
+
+        public void GabbroStartPlaying() {
+            _gabbro.StartPlaying();
+        }
+
         IEnumerator SetAlignment(GameObject obj, Action<GameObject> callback) {
             var generatedParentName = obj.name + "_Body";
             while (true) {

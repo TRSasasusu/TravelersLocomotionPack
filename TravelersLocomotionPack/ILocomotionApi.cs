@@ -26,5 +26,9 @@ namespace TravelersLocomotionPack {
         public void GabbroMoveTo(Transform target, float radius, float speed, Vector3 offset);
 
         public void GabbroMoveStop();
+
+        public void GabbroStopPlaying();
+
+        public void GabbroStartPlaying();
     }
 }
