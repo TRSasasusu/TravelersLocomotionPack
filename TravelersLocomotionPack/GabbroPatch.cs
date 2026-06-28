@@ -101,7 +101,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(OWAudioSource), nameof(OWAudioSource.FadeIn))]
         public static bool OWAudioSource_FadeIn_Prefix(OWAudioSource __instance) {
-            if(Gabbro.IsStopPlaying && __instance == Gabbro.Instance.AudioSignal.GetOWAudioSource()) {
+            if(Gabbro.IsStopPlaying && Gabbro.Instance.AudioSignal != null && __instance == Gabbro.Instance.AudioSignal.GetOWAudioSource()) {
                 return false;
             }
             return true;

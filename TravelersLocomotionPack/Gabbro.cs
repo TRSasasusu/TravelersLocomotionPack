@@ -79,7 +79,9 @@ namespace TravelersLocomotionPack {
             _jetpack.GetComponent<MeshRenderer>().enabled = true;
             _jetpack.SetActive(false);
 
+            ModifyObjects.Instance.PlayerVFX.SetActive(false);
             var vfx = Instantiate(ModifyObjects.Instance.PlayerVFX);
+            ModifyObjects.Instance.PlayerVFX.SetActive(true);
             Destroy(vfx.GetComponent<PlayerParticlesController>());
             foreach(var component in vfx.GetComponentsInChildren<ThrusterWashController>(true)) {
                 Destroy(component);
@@ -102,6 +104,7 @@ namespace TravelersLocomotionPack {
             vfx.transform.parent = _jetpack.transform;
             vfx.transform.localPosition = new Vector3(0.4202f, -0.2888f, 0.3999f);
             vfx.transform.localEulerAngles = new Vector3(0, 42.6509f, 0);
+            vfx.SetActive(true);
             _jetpackUpThruster = vfx.transform.Find("Thrusters/UpThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
             _jetpackDownThruster = vfx.transform.Find("Thrusters/DownThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
             _jetpackLeftThruster = vfx.transform.Find("Thrusters/LeftThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
@@ -134,6 +137,7 @@ namespace TravelersLocomotionPack {
 
                 Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => {
                     transform.parent = null;
+                    _animator.SetTrigger("Playing");
                 }).AddTo(this);
 
                 _conversationZone = GetComponentInChildren<CharacterDialogueTree>(true).GetComponent<SphereCollider>();
@@ -178,7 +182,7 @@ namespace TravelersLocomotionPack {
             if(!_animator.enabled) {
                 _animator.enabled = true;
             }
-            if(!_conversationZone.enabled) {
+            if(_conversationZone != null && !_conversationZone.enabled) {
                 _conversationZone.enabled = true;
             }
             //if(_targetPosition.HasValue) {
