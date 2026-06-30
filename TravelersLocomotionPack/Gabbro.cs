@@ -194,7 +194,7 @@ namespace TravelersLocomotionPack {
         void FixedUpdate() {
             if(_target) {
                 RaycastHit hit;
-                var direction = _target.position + _targetOffset - transform.position;
+                var direction = _target.position + _target.TransformDirection(_targetOffset) - transform.position;
 
                 bool useJetpack = false;
                 var dot = Vector3.Dot(direction.normalized, transform.forward);
@@ -225,7 +225,7 @@ namespace TravelersLocomotionPack {
                 else {
                     var referredRigidbody = _target.GetComponentInParent<OWRigidbody>();
                     if(referredRigidbody) { 
-                        var diffPos = _target.position + _targetOffset - transform.position;
+                        var diffPos = _target.position + _target.TransformDirection(_targetOffset) - transform.position;
                         diffPos -= diffPos.normalized * _targetRadius;
                         var currentDistanceToTarget = diffPos.magnitude;
 
@@ -233,7 +233,7 @@ namespace TravelersLocomotionPack {
                             _jetpackInitialDistanceToTarget = currentDistanceToTarget;
                         }
 
-                        var diffVelocity = referredRigidbody.GetPointVelocity(_target.position + _targetOffset) - _owRigidbody.GetVelocity();
+                        var diffVelocity = referredRigidbody.GetPointVelocity(_target.position + _target.TransformDirection(_targetOffset)) - _owRigidbody.GetVelocity();
                         diffVelocity -= Vector3.Dot(diffVelocity, diffPos.normalized) * diffPos.normalized;
 
                         var currentAccel = _dynamicForceDetector.GetForceAcceleration(); //_owRigidbody._currentAccel;
@@ -286,7 +286,7 @@ namespace TravelersLocomotionPack {
                 //transform.LookAt(_targetPosition.Value);
                 //_owRigidbody.AddVelocityChange((_targetPosition.Value - transform.position).normalized * Speed);
                 _animator.SetFloat("Walk", _targetSpeed);
-                if (Vector3.Distance(transform.position, _target.position + _targetOffset) < _targetRadius) {
+                if (Vector3.Distance(transform.position, _target.position + _target.TransformDirection(_targetOffset)) < _targetRadius) {
                     if(baseAngularVelocity != null) {
                         _owRigidbody.SetAngularVelocity(baseAngularVelocity.Value);
                     }

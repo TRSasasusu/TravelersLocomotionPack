@@ -93,7 +93,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(TravelerAudioManager), nameof(TravelerAudioManager.OnUnpause))]
         public static void TravelerAudioManager_OnUnpause_Postfix() {
-            if(Gabbro.IsStopPlaying) {
+            if(Gabbro.IsStopPlaying && Gabbro.Instance.AudioSignal != null) {
                 Gabbro.Instance.StopPlaying();
             }
         }
