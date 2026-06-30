@@ -70,6 +70,11 @@ namespace TravelersLocomotionPack {
         }
 
         public void GabbroStandUp() {
+            if(Gabbro.IsGabbroStanding) {
+                _gabbro.StandUp(); // only animation
+                return;
+            }
+
             _originalGabbro.SetActive(false);
             _gabbro.gameObject.SetActive(true);
 
@@ -122,6 +127,10 @@ namespace TravelersLocomotionPack {
 
         public void GabbroStartPlaying() {
             _gabbro.StartPlaying();
+        }
+
+        public void GabbroSitting() {
+            _gabbro.Sitting();
         }
 
         IEnumerator SetAlignment(GameObject obj, Action<GameObject> callback) {

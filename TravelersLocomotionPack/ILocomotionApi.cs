@@ -30,5 +30,7 @@ namespace TravelersLocomotionPack {
         public void GabbroStopPlaying();
 
         public void GabbroStartPlaying();
+
+        public void GabbroSitting();
     }
 }

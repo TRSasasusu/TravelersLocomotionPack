@@ -7,6 +7,8 @@ using UnityEngine;
 using DG.Tweening;
 //using UnityEngine.InputSystem.Utilities;
 using UniRx;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 
 namespace TravelersLocomotionPack {
     public class Gabbro : MonoBehaviour {
@@ -47,6 +49,8 @@ namespace TravelersLocomotionPack {
         MeshRenderer _jetpackBackwardRightThruster;
         MeshRenderer _jetpackForwardLeftThruster;
         MeshRenderer _jetpackForwardRightThruster;
+
+        TweenerCore<Vector3, Vector3, VectorOptions> _sittingTween;
 
         public void Initialize() {
             Instance = this;
@@ -117,6 +121,13 @@ namespace TravelersLocomotionPack {
 
         public void StandUp() {
             if(IsGabbroStanding) {
+                _animator.SetTrigger("StandUp");
+                _animator.SetBool("Sitting", false);
+                if(_sittingTween != null) {
+                    _sittingTween.Kill();
+                    _sittingTween = null;
+                }
+                _animator.transform.localPosition = Vector3.zero;
                 return;
             }
 
@@ -176,6 +187,17 @@ namespace TravelersLocomotionPack {
             _target = null;
             _jetpack.SetActive(false);
             _jetpackInitialDistanceToTarget = -1;
+        }
+
+        public void Sitting() {
+            _animator.SetBool("Sitting", true);
+            if(_playing) {
+                _animator.SetTrigger("Playing");
+                _sittingTween = _animator.transform.DOLocalMoveY(-0.78f, 1).SetLink(_animator.gameObject);
+            }
+            else {
+                _animator.SetTrigger("Talking");
+            }
         }
 
         void Update() {
