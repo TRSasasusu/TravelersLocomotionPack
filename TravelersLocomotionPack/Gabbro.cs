@@ -29,6 +29,7 @@ namespace TravelersLocomotionPack {
         AlignmentForceDetector _alignmentForceDetector;
         Animator _animator;
         Transform _target;
+        Transform _onlyLookAtTarget;
         float _targetRadius;
         float _targetSpeed;
         Vector3 _targetOffset;
@@ -157,6 +158,7 @@ namespace TravelersLocomotionPack {
         }
 
         public void MoveTo(Transform targetTransform, float radius, float speed, Vector3 offset) {
+            _onlyLookAtTarget = null;
             _target = targetTransform;
             _targetRadius = radius;
             _targetSpeed = speed;
@@ -164,7 +166,7 @@ namespace TravelersLocomotionPack {
         }
 
         public void MoveStop() {
-            if(!_target) {
+            if(!_target && !_onlyLookAtTarget) {
                 return;
             }
 
@@ -177,7 +179,7 @@ namespace TravelersLocomotionPack {
                 }
             }
             else {
-                var referredRigidbody = _target.GetComponentInParent<OWRigidbody>();
+                var referredRigidbody = _target != null ? _target.GetComponentInParent<OWRigidbody>() : _onlyLookAtTarget.GetComponentInParent<OWRigidbody>();
                 if(referredRigidbody) {
                     _owRigidbody.SetAngularVelocity(referredRigidbody.GetAngularVelocity());
                     _owRigidbody.SetVelocity(referredRigidbody.GetPointVelocity(transform.position));
@@ -185,8 +187,15 @@ namespace TravelersLocomotionPack {
             }
 
             _target = null;
+            _onlyLookAtTarget = null;
             _jetpack.SetActive(false);
             _jetpackInitialDistanceToTarget = -1;
+        }
+
+        public void LookAt(Transform targetTransform, Vector3 offset) {
+            _target = null;
+            _onlyLookAtTarget = targetTransform;
+            _targetOffset = offset;
         }
 
         public void Sitting() {
@@ -324,6 +333,41 @@ namespace TravelersLocomotionPack {
                     _jetpackInitialDistanceToTarget = -1;
                 }
 
+            }
+            else if(_onlyLookAtTarget) {
+                var direction = _onlyLookAtTarget.position + _onlyLookAtTarget.TransformDirection(_targetOffset) - transform.position;
+
+                Vector3? baseAngularVelocity = null;
+                RaycastHit hit;
+                if (Physics.Raycast(transform.position + transform.up * 0.1f, -transform.up, out hit, 0.9f)) {
+                    var referredRigidbody = hit.collider.GetComponentInParent<OWRigidbody>();
+                    if(referredRigidbody) { 
+                        var referredVelocity = referredRigidbody.GetPointVelocity(transform.position);
+                        var normal = hit.normal.normalized;
+                        direction -= Vector3.Dot(direction, normal) * normal;
+                        baseAngularVelocity = referredRigidbody.GetAngularVelocity();
+                    }
+                }
+
+                TravelersLocomotionPack.Log($"LookAt direction: {direction.normalized}, dot: {Vector3.Dot(direction.normalized, transform.forward)}, baseAngularVelocity: {baseAngularVelocity}");
+                if (Vector3.Dot(direction.normalized, transform.forward) > 0.9f) {
+                    if (baseAngularVelocity != null) {
+                        _owRigidbody.SetAngularVelocity(baseAngularVelocity.Value);
+                    }
+                    else {
+                        var referredRigidbody = _onlyLookAtTarget.GetComponentInParent<OWRigidbody>();
+                        if (referredRigidbody) {
+                            _owRigidbody.SetAngularVelocity(referredRigidbody.GetAngularVelocity());
+                        }
+                    }
+                    //_onlyLookAtTarget = null;
+                }
+                else {
+                    var cross = Vector3.Cross(transform.forward, direction.normalized);
+                    var torque = cross * _rotationSpeed;
+                    torque -= _owRigidbody.GetAngularVelocity() * _rotationDamping;
+                    _owRigidbody.AddAngularVelocityChange(torque);
+                }
             }
             else {
                 _animator.SetFloat("Walk", 0);

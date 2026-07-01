@@ -121,6 +121,10 @@ namespace TravelersLocomotionPack {
             _gabbro.MoveTo(target, radius, speed, offset);
         }
 
+        public void GabbroLookAt(Transform target, Vector3 offset) {
+            _gabbro.LookAt(target, offset);
+        }
+
         public void GabbroStopPlaying() {
             _gabbro.StopPlaying();
         }
