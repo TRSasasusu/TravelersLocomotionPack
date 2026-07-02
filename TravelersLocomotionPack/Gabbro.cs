@@ -12,7 +12,7 @@ using DG.Tweening.Plugins.Options;
 
 namespace TravelersLocomotionPack {
     public class Gabbro : MonoBehaviour {
-        public static bool IsGabbroStanding { get { return Instance != null && Instance._isStanding; } }
+        public static bool IsStanding { get { return Instance != null && Instance._isStanding; } }
         public static bool IsStopPlaying { get { return Instance != null && !Instance._playing; } }
         public static Gabbro Instance { get; private set; }
         public static GameObject _gabbroLPBody;
@@ -36,6 +36,7 @@ namespace TravelersLocomotionPack {
         GabbroTravelerController _gabbroTravelerController;
         OWRigidbody _owRigidbody;
         Collider _conversationZone;
+        Transform _flute;
 
         GameObject _jetpack;
         float _jetpackInitialDistanceToTarget = -1;
@@ -118,10 +119,12 @@ namespace TravelersLocomotionPack {
             _jetpackBackwardRightThruster = vfx.transform.Find("Thrusters/BackwardRightThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
             _jetpackForwardLeftThruster = vfx.transform.Find("Thrusters/ForwardLeftThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
             _jetpackForwardRightThruster = vfx.transform.Find("Thrusters/ForwardRightThrust/Effects_HEA_ThrusterFlame").GetComponent<MeshRenderer>();
+
+            _flute = transform.Find("Traveller_HEA_Gabbro_ANIM_IdleFlute_LP2/gabbro_OW_V02:gabbro_rig_v01:Trajectory_Jnt/gabbro_OW_V02:gabbro_rig_v01:ROOT_Jnt/gabbro_OW_V02:gabbro_rig_v01:Spine_01_Jnt/gabbro_OW_V02:gabbro_rig_v01:Spine_02_Jnt/gabbro_OW_V02:gabbro_rig_v01:Spine_Top_Jnt/gabbro_OW_V02:gabbro_rig_v01:RT_Arm_Clavicle_Jnt/gabbro_OW_V02:gabbro_rig_v01:RT_Arm_Shoulder_Jnt/gabbro_OW_V02:gabbro_rig_v01:RT_Arm_Elbow_Jnt/gabbro_OW_V02:gabbro_rig_v01:RT_Arm_Wrist_Jnt/Props_HEA_Flute");
         }
 
         public void StandUp() {
-            if(IsGabbroStanding) {
+            if(IsStanding) {
                 _animator.SetTrigger("StandUp");
                 _animator.SetBool("Sitting", false);
                 if(_sittingTween != null) {
@@ -129,6 +132,10 @@ namespace TravelersLocomotionPack {
                     _sittingTween = null;
                 }
                 _animator.transform.localPosition = Vector3.zero;
+
+                _flute.localPosition = new Vector3(0.222f, 0.0504f, -0.1457f);
+                _flute.localEulerAngles = new Vector3(40.745f, 122.8411f, 285.6188f);
+                _flute.localScale = new Vector3(1.3f, 1.3f, 1.3f);
                 return;
             }
 
@@ -207,6 +214,10 @@ namespace TravelersLocomotionPack {
             else {
                 _animator.SetTrigger("Talking");
             }
+
+            _flute.localPosition = new Vector3(0.2564f, 0.0652f, 0.0344f);
+            _flute.localEulerAngles = new Vector3(-217.918f, -83.78799f, 90.05f);
+            _flute.localScale = Vector3.one;
         }
 
         void Update() {

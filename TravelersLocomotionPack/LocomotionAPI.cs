@@ -70,7 +70,7 @@ namespace TravelersLocomotionPack {
         }
 
         public void GabbroStandUp() {
-            if(Gabbro.IsGabbroStanding) {
+            if(Gabbro.IsStanding) {
                 _gabbro.StandUp(); // only animation
                 return;
             }

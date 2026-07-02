@@ -11,7 +11,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GabbroTravelerController), nameof(GabbroTravelerController.Update))]
         public static bool GabbroTravelerController_Update_Prefix() {
-            if (Gabbro.IsGabbroStanding) {
+            if (Gabbro.IsStanding) {
                 return false;
             }
             return true;
@@ -20,7 +20,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GabbroTravelerController), nameof(GabbroTravelerController.StartConversation))]
         public static bool GabbroTravelerController_StartConversation_Prefix(GabbroTravelerController __instance) {
-            if (Gabbro.IsGabbroStanding) {
+            if (Gabbro.IsStanding) {
                 if(__instance._animator.enabled) {
                     __instance._animator.SetTrigger("Talking");
                 }
@@ -33,7 +33,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GabbroTravelerController), nameof(GabbroTravelerController.EndConversation))]
         public static bool GabbroTravelerController_EndConversation_Prefix(GabbroTravelerController __instance, float audioDelay) {
-            if (Gabbro.IsGabbroStanding) {
+            if (Gabbro.IsStanding) {
                 if (__instance._animator.enabled) {
                     if(Gabbro.IsStopPlaying) {
                         __instance._animator.SetTrigger("Talking");
@@ -51,7 +51,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GabbroTravelerController), nameof(GabbroTravelerController.OnUnpause))]
         public static bool GabbroTravelerController_OnUnpause_Prefix(GabbroTravelerController __instance) {
-            if(Gabbro.IsGabbroStanding) {
+            if(Gabbro.IsStanding) {
                 if(__instance._animator.enabled) {
                     if(Gabbro.IsStopPlaying) {
                         __instance._animator.SetTrigger("Talking");
@@ -68,7 +68,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GabbroTravelerController), nameof(GabbroTravelerController.OnIslandSplashEvent))]
         public static bool GabbroTravelerController_OnIslandSplashEvent_Prefix() {
-            if(Gabbro.IsGabbroStanding) {
+            if(Gabbro.IsStanding) {
                 return false;
             }
             return true;
@@ -76,7 +76,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GabbroTravelerController), nameof(GabbroTravelerController.OnIslandApexEvent))]
         public static bool GabbroTravelerController_OnIslandApexEvent_Prefix() {
-            if(Gabbro.IsGabbroStanding) {
+            if(Gabbro.IsStanding) {
                 return false;
             }
             return true;
@@ -84,7 +84,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GabbroTravelerController), nameof(GabbroTravelerController.OnSectorOccupantsUpdated))]
         public static bool GabbroTravelerController_OnSectorOccupantsUpdated_Prefix() {
-            if(Gabbro.IsGabbroStanding) {
+            if(Gabbro.IsStanding) {
                 return false;
             }
             return true;
