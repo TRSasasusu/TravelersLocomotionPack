@@ -20,7 +20,6 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(TravelerController), nameof(TravelerController.EndConversation))]
         public static bool TravelerController_EndConversation_Prefix(TravelerController __instance, float audioDelay) {
-            //TravelersLocomotionPack.Log("called TravelerController_EndConversation_Prefix");
             if (Chert.Instance != null && __instance == Chert.Instance.TravelerController) {
                 if (__instance._animator.enabled) {
                     if (Chert.IsStopPlaying) {

@@ -36,10 +36,22 @@ namespace TravelersLocomotionPack {
                     _sittingTween = null;
                 }
                 _animator.transform.localPosition = Vector3.zero;
+                if(AudioSignal) {
+                    AudioSignal.transform.localPosition = new Vector3(0, 1.4859f, 0.6699f);
+                }
 
                 _flute.localPosition = new Vector3(0.222f, 0.0504f, -0.1457f);
                 _flute.localEulerAngles = new Vector3(40.745f, 122.8411f, 285.6188f);
                 _flute.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+
+                Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ => {
+                    if(_playing) {
+                        _animator.SetTrigger("Playing");
+                    }
+                    else {
+                        _animator.SetTrigger("Talking");
+                    }
+                }).AddTo(this);
                 return;
             }
 
@@ -74,8 +86,40 @@ namespace TravelersLocomotionPack {
             _flute.localEulerAngles = new Vector3(-217.918f, -83.78799f, 90.05f);
             _flute.localScale = Vector3.one;
 
-            if(_playing) {
-                _sittingTween = _animator.transform.DOLocalMoveY(-0.78f, 1).SetLink(_animator.gameObject);
+            AudioSignal.transform.localPosition = new Vector3(0, 0.7121f, 0.2321f);
+
+            SittingTween(null, 1);
+        }
+
+        public override void StartPlaying() {
+            base.StartPlaying();
+            SittingTween();
+        }
+
+        public override void StopPlaying() {
+            base.StopPlaying();
+            SittingTween();
+        }
+
+        public void SittingTween(bool? playing = null, float duration = 0.1f) {
+            if(!IsSitting) {
+                return;
+            }
+            if(_sittingTween != null) {
+                _sittingTween.Kill();
+                _sittingTween = null;
+            }
+
+            if(!playing.HasValue) {
+                playing = _playing;
+            }
+
+            if(playing.Value) {
+                //_sittingTween = _animator.transform.DOLocalMoveY(-0.78f, 1).SetLink(_animator.gameObject);
+                _sittingTween = _animator.transform.DOLocalMove(new Vector3(0, -0.78f, 0), duration).SetLink(_animator.gameObject);
+            }
+            else {
+                _sittingTween = _animator.transform.DOLocalMove(new Vector3(0, 0, 0.53f), duration).SetLink(_animator.gameObject);
             }
         }
     }

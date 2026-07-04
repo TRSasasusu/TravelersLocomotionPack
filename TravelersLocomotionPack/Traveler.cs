@@ -12,6 +12,7 @@ using DG.Tweening.Plugins.Options;
 namespace TravelersLocomotionPack {
     public class Traveler : MonoBehaviour {
         public AudioSignal AudioSignal { get; protected set; }
+        public bool IsSitting { get; private set; }
 
         protected bool _playing = true;
         float _speed = 2f;
@@ -155,6 +156,7 @@ namespace TravelersLocomotionPack {
         }
 
         public virtual void Sitting() {
+            IsSitting = true;
             _animator.SetBool("Sitting", true);
             if(_playing) {
                 _animator.SetTrigger("Playing");
@@ -339,14 +341,14 @@ namespace TravelersLocomotionPack {
             }
         }
 
-        public void StopPlaying() {
+        public virtual void StopPlaying() {
             _playing = false;
             AudioSignal._active = false;
             AudioSignal.GetOWAudioSource().FadeOut(0.5f, OWAudioSource.FadeOutCompleteAction.STOP, 0f);
             _animator.SetTrigger("Talking");
         }
 
-        public void StartPlaying() {
+        public virtual void StartPlaying() {
             _playing = true;
             AudioSignal._active = true;
             AudioSignal.GetOWAudioSource().FadeIn(0.5f, false, false, 1f);
