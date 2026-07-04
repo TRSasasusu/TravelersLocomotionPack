@@ -96,12 +96,18 @@ namespace TravelersLocomotionPack {
             if(Gabbro.IsStopPlaying && Gabbro.Instance.AudioSignal != null) {
                 Gabbro.Instance.StopPlaying();
             }
+            if(Chert.IsStopPlaying && Chert.Instance.AudioSignal != null) {
+                Chert.Instance.StopPlaying();
+            }
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(OWAudioSource), nameof(OWAudioSource.FadeIn))]
         public static bool OWAudioSource_FadeIn_Prefix(OWAudioSource __instance) {
             if(Gabbro.IsStopPlaying && Gabbro.Instance.AudioSignal != null && __instance == Gabbro.Instance.AudioSignal.GetOWAudioSource()) {
+                return false;
+            }
+            if(Chert.IsStopPlaying && Chert.Instance.AudioSignal != null && __instance == Chert.Instance.AudioSignal.GetOWAudioSource()) {
                 return false;
             }
             return true;

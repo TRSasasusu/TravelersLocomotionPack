@@ -11,9 +11,15 @@ namespace TravelersLocomotionPack {
 
         public void ChertInitialize(GameObject chert);
 
+        public GameObject GetChert();
+
         public void ChertSitDown();
 
         public void ChertEndOnFloor();
+
+        public void ChertStartPlaying();
+
+        public void ChertStopPlaying();
 
         public void GabbroInitialize(GameObject gabbro);
 

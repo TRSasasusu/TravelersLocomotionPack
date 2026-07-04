@@ -23,8 +23,24 @@ namespace TravelersLocomotionPack {
         }
 
         public void ChertInitialize(GameObject chert) {
-            _chert = chert.AddComponent<Chert>();
+            var originalChert = chert;
+            var newChert = TravelersLocomotionPack.Instance.NewHorizons.SpawnObject(TravelersLocomotionPack.Instance, chert.transform.root.gameObject, null, chert.transform.GetPath(), chert.transform.localPosition, chert.transform.localEulerAngles, 1, false);
+            chert.SetActive(false);
+
+            _chert = newChert.AddComponent<Chert>();
+            _chert.transform.parent = chert.transform.parent;
+            _chert.transform.localPosition = chert.transform.localPosition;
+            _chert.transform.localEulerAngles = chert.transform.localEulerAngles;
+
+            FindAndSetAudioSignalAndConversationZone(_chert.gameObject, originalChert);
+
             _chert.Initialize();
+
+            //GameObject.Destroy(originalChert);
+        }
+
+        public GameObject GetChert() {
+            return _chert.gameObject;
         }
 
         public void ChertSitDown() {
@@ -33,6 +49,14 @@ namespace TravelersLocomotionPack {
 
         public void ChertEndOnFloor() {
             _chert.EndOnFloor();
+        }
+
+        public void ChertStopPlaying() {
+            _chert.StopPlaying();
+        }
+
+        public void ChertStartPlaying() {
+            _chert.StartPlaying();
         }
 
         public void GabbroInitialize(GameObject gabbro) {
@@ -78,37 +102,7 @@ namespace TravelersLocomotionPack {
             _originalGabbro.SetActive(false);
             _gabbro.gameObject.SetActive(true);
 
-            var audiosignal = _originalGabbro.GetComponentInChildren<AudioSignal>(true);
-            if(!audiosignal && _originalGabbro.transform.parent) {
-                audiosignal = _originalGabbro.transform.parent.GetComponentInChildren<AudioSignal>(true);
-                if(!audiosignal && _originalGabbro.transform.parent.parent) {
-                    audiosignal = _originalGabbro.transform.parent.parent.GetComponentInChildren<AudioSignal>(true);
-                }
-            }
-            if(audiosignal) {
-                audiosignal.transform.parent = _gabbro.transform;
-                audiosignal.transform.localPosition = new Vector3(0, 1.4859f, 0.6699f);
-                audiosignal.transform.localEulerAngles = Vector3.zero;
-            }
-
-            var conversationZone = _originalGabbro.GetComponentInChildren<CharacterDialogueTree>(true);
-            if(!conversationZone && _originalGabbro.transform.parent) {
-                conversationZone = _originalGabbro.transform.parent.GetComponentInChildren<CharacterDialogueTree>(true);
-                //TravelersLocomotionPack.Log($"conversationZone: {conversationZone}");
-            }
-            if(conversationZone != null) {
-                conversationZone.transform.parent = _gabbro.transform;
-                conversationZone.transform.localPosition = new Vector3(0, 1.511f, 0);
-                conversationZone.transform.localEulerAngles = Vector3.zero;
-                conversationZone.GetComponent<InteractReceiver>()._usableInShip = true;
-                //TravelersLocomotionPack.Log($"conversationZone is moved!");
-
-                if(conversationZone._attentionPoint != null) {
-                    conversationZone._attentionPoint.transform.parent = _gabbro.transform;
-                    conversationZone._attentionPoint.transform.localPosition = new Vector3(0, 1.511f, 0);
-                    conversationZone._attentionPoint.transform.localEulerAngles = Vector3.zero;
-                }
-            }
+            FindAndSetAudioSignalAndConversationZone(_gabbro.gameObject, _originalGabbro, new Vector3(0, 1.4859f, 0.6699f), new Vector3(0, 1.511f, 0));
 
             _gabbro.StandUp();
         }
@@ -158,6 +152,53 @@ namespace TravelersLocomotionPack {
 
             obj.SetActive(false);
             callback(obj);
+        }
+
+        void FindAndSetAudioSignalAndConversationZone(GameObject target, GameObject source, Vector3? audioSignalPos = null, Vector3? conversationZonePos = null) {
+            var audiosignal = source.GetComponentInChildren<AudioSignal>(true);
+            if (!audiosignal && source.transform.parent) {
+                audiosignal = source.transform.parent.GetComponentInChildren<AudioSignal>(true);
+                if (!audiosignal && source.transform.parent.parent) {
+                    audiosignal = source.transform.parent.parent.GetComponentInChildren<AudioSignal>(true);
+                }
+            }
+            if (audiosignal) {
+                var existingAudiosignal = target.GetComponentInChildren<AudioSignal>(true);
+                if(existingAudiosignal) {
+                    GameObject.Destroy(existingAudiosignal.gameObject);
+                }
+
+                audiosignal.transform.parent = target.transform;
+                if(audioSignalPos.HasValue) {
+                    audiosignal.transform.localPosition = audioSignalPos.Value;
+                    audiosignal.transform.localEulerAngles = Vector3.zero;
+                }
+            }
+
+            var conversationZone = source.GetComponentInChildren<CharacterDialogueTree>(true);
+            if (!conversationZone && source.transform.parent) {
+                conversationZone = source.transform.parent.GetComponentInChildren<CharacterDialogueTree>(true);
+            }
+            if (conversationZone != null) {
+                var existingConversationZone = target.GetComponentInChildren<CharacterDialogueTree>(true);
+                if(existingConversationZone) {
+                    GameObject.Destroy(existingConversationZone.gameObject); // because TravelerController controls the original conversation zone as _dialogueSystem
+                }
+
+                conversationZone.transform.parent = target.transform;
+                if(conversationZonePos.HasValue) {
+                    conversationZone.transform.localPosition = conversationZonePos.Value;
+                    conversationZone.transform.localEulerAngles = Vector3.zero;
+                }
+                conversationZone.GetComponent<InteractReceiver>()._usableInShip = true;
+                if (conversationZone._attentionPoint != null) {
+                    conversationZone._attentionPoint.transform.parent = target.transform;
+                    if(conversationZonePos.HasValue) {
+                        conversationZone._attentionPoint.transform.localPosition = conversationZonePos.Value;
+                        conversationZone._attentionPoint.transform.localEulerAngles = Vector3.zero;
+                    }
+                }
+            }
         }
     }
 }
