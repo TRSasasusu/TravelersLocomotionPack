@@ -80,5 +80,11 @@ namespace TravelersLocomotionPack {
             AudioSignal.GetOWAudioSource().timeSamples = 0;
             _animator.SetTrigger("Playing");
         }
+
+        void Update() {
+            if(_animator != null && !_animator.enabled) {
+                _animator.enabled = true;
+            }
+        }
     }
 }
