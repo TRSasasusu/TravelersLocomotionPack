@@ -62,6 +62,8 @@ namespace TravelersLocomotionPack {
 
             _alignmentForceDetector._collider = capsuleCollider;
 
+            GetComponent<Shape>()._layerMask = 7; // default made by NH is 5, but to be detected by sectors, it needs |2 (Shape.Layer.Sector = 2)
+
             _owRigidbody = GetComponent<OWRigidbody>();
 
             gameObject.AddComponent<SectorDetector>();
