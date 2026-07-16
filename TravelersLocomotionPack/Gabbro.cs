@@ -37,8 +37,8 @@ namespace TravelersLocomotionPack {
                     AudioSignal.transform.localPosition = new Vector3(0, 1.4859f, 0.6699f);
                 }
                 if(_conversationZoneDialogueTree != null) {
-                    _conversationZoneDialogueTree.transform.localPosition = new Vector3(-2.6768f, -3.5163f, 1.1796f);
-                    _conversationZoneDialogueTree._attentionPoint.localPosition = new Vector3(-2.6768f, -3.5163f, 1.1796f);
+                    _conversationZoneDialogueTree.transform.localPosition = new Vector3(0, 1.511f, 0);//new Vector3(-2.6768f, -3.5163f, 1.1796f);
+                    _conversationZoneDialogueTree._attentionPoint.localPosition = new Vector3(0, 1.511f, 0);//new Vector3(-2.6768f, -3.5163f, 1.1796f);
                 }
 
                 _flute.localPosition = new Vector3(0.222f, 0.0504f, -0.1457f);
