@@ -16,7 +16,8 @@ namespace TravelersLocomotionPack {
         public static Gabbro Instance { get; private set; } // it would cause bug!!!
 
         Transform _flute;
-        TweenerCore<Vector3, Vector3, VectorOptions> _sittingTween;
+        //TweenerCore<Vector3, Vector3, VectorOptions> _sittingTween;
+        CharacterDialogueTree _conversationZoneDialogueTree;
 
         public override void Initialize() {
             base.Initialize();
@@ -31,13 +32,13 @@ namespace TravelersLocomotionPack {
             if(IsStanding) {
                 _animator.SetTrigger("StandUp");
                 _animator.SetBool("Sitting", false);
-                if(_sittingTween != null) {
-                    _sittingTween.Kill();
-                    _sittingTween = null;
-                }
                 _animator.transform.localPosition = Vector3.zero;
                 if(AudioSignal) {
                     AudioSignal.transform.localPosition = new Vector3(0, 1.4859f, 0.6699f);
+                }
+                if(_conversationZoneDialogueTree != null) {
+                    _conversationZoneDialogueTree.transform.localPosition = new Vector3(-2.6768f, -3.5163f, 1.1796f);
+                    _conversationZoneDialogueTree._attentionPoint.localPosition = new Vector3(-2.6768f, -3.5163f, 1.1796f);
                 }
 
                 _flute.localPosition = new Vector3(0.222f, 0.0504f, -0.1457f);
@@ -55,10 +56,10 @@ namespace TravelersLocomotionPack {
                 return;
             }
 
-            var conversationZone = GetComponentInChildren<InteractReceiver>(true);
-            conversationZone.gameObject.SetActive(false);
+            _conversationZoneDialogueTree = GetComponentInChildren<CharacterDialogueTree>(true);
+            _conversationZoneDialogueTree.gameObject.SetActive(false);
             Observable.NextFrame().Subscribe(_ => {
-                conversationZone.gameObject.SetActive(true);
+                _conversationZoneDialogueTree.gameObject.SetActive(true);
 
                 _travelerController._animator = _animator;
 
@@ -86,41 +87,17 @@ namespace TravelersLocomotionPack {
             _flute.localEulerAngles = new Vector3(-217.918f, -83.78799f, 90.05f);
             _flute.localScale = Vector3.one;
 
-            AudioSignal.transform.localPosition = new Vector3(0, 0.7121f, 0.2321f);
-
-            SittingTween(null, 1);
+            AudioSignal.transform.localPosition = new Vector3(-0.0264f, 0.7121f, -0.4652f);
+            _conversationZoneDialogueTree.transform.localPosition = new Vector3(-0.0254f, 0.9379f, -1.1304f);
+            _conversationZoneDialogueTree._attentionPoint.localPosition = new Vector3(-0.0254f, 0.9379f, -1.1304f);
         }
 
         public override void StartPlaying() {
             base.StartPlaying();
-            SittingTween();
         }
 
         public override void StopPlaying() {
             base.StopPlaying();
-            SittingTween();
-        }
-
-        public void SittingTween(bool? playing = null, float duration = 0.1f) {
-            if(!IsSitting) {
-                return;
-            }
-            if(_sittingTween != null) {
-                _sittingTween.Kill();
-                _sittingTween = null;
-            }
-
-            if(!playing.HasValue) {
-                playing = _playing;
-            }
-
-            if(playing.Value) {
-                //_sittingTween = _animator.transform.DOLocalMoveY(-0.78f, 1).SetLink(_animator.gameObject);
-                _sittingTween = _animator.transform.DOLocalMove(new Vector3(0, -0.78f, 0), duration).SetLink(_animator.gameObject);
-            }
-            else {
-                _sittingTween = _animator.transform.DOLocalMove(new Vector3(0, 0, 0.53f), duration).SetLink(_animator.gameObject);
-            }
         }
     }
 }

@@ -23,7 +23,6 @@ namespace TravelersLocomotionPack {
             if (Gabbro.IsStanding) {
                 if(__instance._animator.enabled) {
                     __instance._animator.SetTrigger("Talking");
-                    Gabbro.Instance.SittingTween(false);
                 }
                 Locator.GetTravelerAudioManager().StopAllTravelerAudio();
                 return false;
@@ -41,7 +40,6 @@ namespace TravelersLocomotionPack {
                     }
                     else {
                         __instance._animator.SetTrigger("Playing");
-                        Gabbro.Instance.SittingTween();
                     }
                 }
                 Locator.GetTravelerAudioManager().PlayAllTravelerAudio(audioDelay);
