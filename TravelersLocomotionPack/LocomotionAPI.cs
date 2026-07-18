@@ -18,9 +18,8 @@ namespace TravelersLocomotionPack {
         Gabbro _gabbro;
         //GameObject _originalJetpack;
 
-        public void RiebeckStandUp() {
-            throw new NotImplementedException();
-        }
+        GameObject _originalRiebeck;
+        Riebeck _riebeck;
 
         public void ChertInitialize(GameObject chert) {
             var originalChert = chert;
@@ -129,6 +128,74 @@ namespace TravelersLocomotionPack {
 
         public void GabbroSitting() {
             _gabbro.Sitting();
+        }
+
+        public void RiebeckInitialize(GameObject riebeck) {
+            _originalRiebeck = riebeck;
+
+            var riebeckLP = TravelersLocomotionPack.Instance.NewHorizons.SpawnObject(TravelersLocomotionPack.Instance, riebeck.transform.root.gameObject, null, riebeck.transform.GetPath(), riebeck.transform.localPosition, riebeck.transform.localEulerAngles, 1, false);
+            riebeckLP.name = riebeck.name + "_LP2";
+            riebeckLP.AddComponent<NewHorizons.Components.AddPhysics>(); // this requires around 0.1 sec.
+
+            Coroutine coroutine = TravelersLocomotionPack.Instance.StartCoroutine(SetAlignment(riebeckLP, obj => {
+                obj.transform.parent = riebeck.transform.parent;
+                obj.transform.localPosition = Vector3.zero;
+                obj.transform.localEulerAngles = Vector3.zero;
+
+                _riebeck = obj.AddComponent<Riebeck>();
+                _riebeck.Initialize();
+            }));
+            riebeck.OnDestroyAsObservable().Subscribe(_ => {
+                if(coroutine != null) {
+                    TravelersLocomotionPack.Instance.StopCoroutine(coroutine);
+                }
+            });
+        }
+
+        public bool RiebeckIsInitialized() {
+            return _riebeck != null;
+        }
+
+        public GameObject GetRiebeck() {
+            return _riebeck.gameObject;
+        }
+
+        public void RiebeckStandUp() {
+            if(Riebeck.IsStanding) {
+                _riebeck.StandUp();
+                return;
+            }
+
+            _originalRiebeck.SetActive(false);
+            _riebeck.gameObject.SetActive(true);
+
+            FindAndSetAudioSignalAndConversationZone(_riebeck.gameObject, _originalRiebeck, new Vector3(0, 1.4859f, 0.6699f), new Vector3(0, 1.511f, 0));
+
+            _riebeck.StandUp();
+        }
+
+        public void RiebeckMoveStop() {
+            _riebeck.MoveStop();
+        }
+
+        public void RiebeckMoveTo(Transform target, float radius, float speed, Vector3 offset) {
+            _riebeck.MoveTo(target, radius, speed, offset);
+        }
+
+        public void RiebeckLookAt(Transform target, Vector3 offset) {
+            _riebeck.LookAt(target, offset);
+        }
+
+        public void RiebeckStopPlaying() {
+            _riebeck.StopPlaying();
+        }
+
+        public void RiebeckStartPlaying() {
+            _riebeck.StartPlaying();
+        }
+
+        public void RiebeckSitting() {
+            _riebeck.Sitting();
         }
 
         IEnumerator SetAlignment(GameObject obj, Action<GameObject> callback) {

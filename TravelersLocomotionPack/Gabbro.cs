@@ -13,7 +13,7 @@ namespace TravelersLocomotionPack {
     public class Gabbro : Traveler {
         public static bool IsStanding { get { return Instance != null && Instance._isStanding; } }
         public static bool IsStopPlaying { get { return Instance != null && !Instance._playing; } }
-        public static Gabbro Instance { get; private set; } // it would cause bug!!!
+        public static Gabbro Instance { get; private set; }
 
         Transform _flute;
         //TweenerCore<Vector3, Vector3, VectorOptions> _sittingTween;
@@ -82,6 +82,7 @@ namespace TravelersLocomotionPack {
         }
 
         public override void Sitting() {
+            _animator.SetBool("Sitting", true);
             base.Sitting();
             _flute.localPosition = new Vector3(0.2564f, 0.0652f, 0.0344f);
             _flute.localEulerAngles = new Vector3(-217.918f, -83.78799f, 90.05f);

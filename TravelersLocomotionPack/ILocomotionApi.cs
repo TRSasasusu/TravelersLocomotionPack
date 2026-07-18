@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace TravelersLocomotionPack {
     public interface ILocomotion {
-        public void RiebeckStandUp();
-
         public void ChertInitialize(GameObject chert);
 
         public GameObject GetChert();
@@ -40,5 +38,25 @@ namespace TravelersLocomotionPack {
         public void GabbroStartPlaying();
 
         public void GabbroSitting();
+
+        public void RiebeckInitialize(GameObject riebeck);
+
+        public bool RiebeckIsInitialized();
+
+        public GameObject GetRiebeck();
+
+        public void RiebeckStandUp();
+
+        public void RiebeckMoveTo(Transform target, float radius, float speed, Vector3 offset);
+
+        public void RiebeckMoveStop();
+
+        public void RiebeckLookAt(Transform target, Vector3 offset);
+
+        public void RiebeckStopPlaying();
+
+        public void RiebeckStartPlaying();
+
+        public void RiebeckSitting();
     }
 }

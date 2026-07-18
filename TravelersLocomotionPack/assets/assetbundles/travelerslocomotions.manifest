@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1437802127
+CRC: 4147477955
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: b474c4d914914b81611023cb37d19d0e
+    Hash: 4a658420a7fa5b13c0cf4ea08bf9b1e6
   TypeTreeHash:
     serializedVersion: 2
     Hash: fdf6c57a251b9f6ec27bdd2fe01b033c
@@ -15,7 +15,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/MyAssets/Animators/riebeck/riebeck.controller
 - Assets/MyAssets/Animators/gabbro/gabbro.controller
 - Assets/MyAssets/Animators/chert/chert.controller
+- Assets/MyAssets/Animators/riebeck/riebeck.controller
 Dependencies: []

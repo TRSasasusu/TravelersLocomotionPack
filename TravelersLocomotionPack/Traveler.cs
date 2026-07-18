@@ -159,7 +159,6 @@ namespace TravelersLocomotionPack {
 
         public virtual void Sitting() {
             IsSitting = true;
-            _animator.SetBool("Sitting", true);
             if(_playing) {
                 _animator.SetTrigger("Playing");
             }
