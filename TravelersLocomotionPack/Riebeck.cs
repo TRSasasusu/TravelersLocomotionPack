@@ -31,6 +31,7 @@ namespace TravelersLocomotionPack {
         }
 
         public override void Sitting() {
+            _animator.SetBool("NoSitting", false);
             _animator.SetBool("GroundSitting", true);
             base.Sitting();
         }
