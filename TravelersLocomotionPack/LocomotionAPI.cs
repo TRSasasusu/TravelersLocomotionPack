@@ -201,10 +201,12 @@ namespace TravelersLocomotionPack {
         IEnumerator SetAlignment(GameObject obj, Action<GameObject> callback) {
             var generatedParentName = obj.name + "_Body";
             while (true) {
+                //TravelersLocomotionPack.Log($"obj.name: {obj.name}, obj.transform.parent.name: {obj.transform.parent.name}, generatedParentName: {generatedParentName}");
                 if(obj.transform.parent.name == generatedParentName) {
                     break;
                 }
-                yield return null;
+                yield return new WaitForEndOfFrame(); // use this instead of `yield return null` to avoid destroying riebeck due to black hole maybe.
+                //yield return null;
             }
 
             obj = obj.transform.parent.gameObject;
