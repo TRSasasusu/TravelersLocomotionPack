@@ -22,7 +22,7 @@ namespace TravelersLocomotionPack {
 
         DynamicForceDetector _dynamicForceDetector;
         AlignmentForceDetector _alignmentForceDetector;
-        protected Animator _animator;
+        public Animator _animator { get; protected set; }
         Transform _target;
         Transform _onlyLookAtTarget;
         float _targetRadius;

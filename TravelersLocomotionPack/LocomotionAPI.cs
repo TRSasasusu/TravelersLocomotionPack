@@ -169,7 +169,7 @@ namespace TravelersLocomotionPack {
             _originalRiebeck.SetActive(false);
             _riebeck.gameObject.SetActive(true);
 
-            FindAndSetAudioSignalAndConversationZone(_riebeck.gameObject, _originalRiebeck, new Vector3(0, 1.4859f, 0.6699f), new Vector3(0, 1.511f, 0));
+            FindAndSetAudioSignalAndConversationZone(_riebeck.gameObject, _originalRiebeck, new Vector3(0.045f, 1.214f, 0.5696f), new Vector3(0, 1.511f, 0));
 
             _riebeck.StandUp();
         }
