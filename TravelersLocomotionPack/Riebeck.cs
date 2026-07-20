@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using DG.Tweening;
+using NewHorizons.Utility;
 
 namespace TravelersLocomotionPack {
     public class Riebeck : Traveler {
@@ -22,6 +24,18 @@ namespace TravelersLocomotionPack {
         }
 
         public override void StandUp() {
+            var owRigidbody = GetComponent<OWRigidbody>();
+            //owRigidbody._kinematicSimulation = true;
+            var cachedParent = transform.parent;
+            //TravelersLocomotionPack.Log($"cachedParent: {cachedParent.GetPath()}");
+            owRigidbody.Suspend(); // Suspend makes its parent BrittleHollow_Body
+            transform.parent = cachedParent;
+
+            var leftCollider = cachedParent.Find("CapsuleCollider");
+            if (leftCollider != null) {
+                leftCollider.gameObject.SetActive(false);
+            }
+
             base.StandUp();
 
             if(!_isStanding) {
@@ -47,6 +61,11 @@ namespace TravelersLocomotionPack {
             else {
                 _animator.SetTrigger("Talking");
             }
+
+            transform.DOLocalMoveZ(1.02f, 0.5f).OnComplete(() => {
+                //owRigidbody._kinematicSimulation = false;
+                owRigidbody.Unsuspend();
+            }).SetLink(gameObject);
         }
 
         public override void Sitting() {

@@ -48,7 +48,7 @@ namespace TravelersLocomotionPack {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(TravelerController), nameof(TravelerController.OnUnpause))]
         public static bool TravelerController_OnUnpause_Prefix(TravelerController __instance) {
-            if (__instance._animator == Riebeck.Instance._animator) {
+            if (Riebeck.Instance != null && __instance._animator == Riebeck.Instance._animator) {
                 if (Riebeck.IsStanding) {
                     if (__instance._animator.enabled) {
                         if (Riebeck.IsStopPlaying) {
