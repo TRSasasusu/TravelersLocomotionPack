@@ -66,6 +66,8 @@ namespace TravelersLocomotionPack {
                 //owRigidbody._kinematicSimulation = false;
                 owRigidbody.Unsuspend();
             }).SetLink(gameObject);
+
+            _conversationZone = GetComponentInChildren<CharacterDialogueTree>(true).GetComponent<SphereCollider>();
         }
 
         public override void Sitting() {
