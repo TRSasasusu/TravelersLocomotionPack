@@ -83,5 +83,10 @@ namespace TravelersLocomotionPack {
                 _conversationZoneDialogueTree._attentionPoint.localPosition = new Vector3(0, 0.9348f, 0);
             }
         }
+
+        public void SittingWithoutLegCrossing() {
+            _animator.SetBool("NoSitting", false);
+            base.Sitting();
+        }
     }
 }

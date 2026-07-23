@@ -57,6 +57,6 @@ namespace TravelersLocomotionPack {
 
         public void RiebeckStartPlaying();
 
-        public void RiebeckSitting();
+        public void RiebeckSitting(bool legcrossing = true);
     }
 }

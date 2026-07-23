@@ -194,8 +194,13 @@ namespace TravelersLocomotionPack {
             _riebeck.StartPlaying();
         }
 
-        public void RiebeckSitting() {
-            _riebeck.Sitting();
+        public void RiebeckSitting(bool legcrossing = true) {
+            if(legcrossing) {
+                _riebeck.Sitting();
+            }
+            else {
+                _riebeck.SittingWithoutLegCrossing();
+            }
         }
 
         IEnumerator SetAlignment(GameObject obj, Action<GameObject> callback) {

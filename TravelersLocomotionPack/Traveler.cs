@@ -31,6 +31,7 @@ namespace TravelersLocomotionPack {
         protected TravelerController _travelerController;
         OWRigidbody _owRigidbody;
         protected Collider _conversationZone;
+        CapsuleCollider _capsuleCollider;
 
         GameObject _jetpack;
         float _jetpackInitialDistanceToTarget = -1;
@@ -55,12 +56,12 @@ namespace TravelersLocomotionPack {
             _dynamicForceDetector = GetComponentInChildren<DynamicForceDetector>();
 
             Destroy(GetComponent<SphereCollider>());
-            var capsuleCollider = gameObject.AddComponent<CapsuleCollider>();
-            capsuleCollider.center = new Vector3(0, 0.9f, 0);
-            capsuleCollider.radius = 0.5f;
-            capsuleCollider.height = 1.8f;
+            _capsuleCollider = gameObject.AddComponent<CapsuleCollider>();
+            _capsuleCollider.center = new Vector3(0, 0.9f, 0);
+            _capsuleCollider.radius = 0.5f;
+            _capsuleCollider.height = 1.8f;
 
-            _alignmentForceDetector._collider = capsuleCollider;
+            _alignmentForceDetector._collider = _capsuleCollider;
 
             GetComponent<Shape>()._layerMask = 7; // default made by NH is 5, but to be detected by sectors, it needs |2 (Shape.Layer.Sector = 2)
 
@@ -165,6 +166,37 @@ namespace TravelersLocomotionPack {
             else {
                 _animator.SetTrigger("Talking");
             }
+        }
+
+        public void DisableRigidbody(Transform newParent) {
+            var dummyObj = new GameObject("Dummy");
+            dummyObj.transform.parent = newParent;
+            dummyObj.transform.position = transform.position;
+            dummyObj.transform.eulerAngles = transform.eulerAngles;
+            _animator.transform.parent = dummyObj.transform;
+            _owRigidbody.Suspend(newParent.GetComponentInParent<OWRigidbody>());
+            _owRigidbody.FreezePosition();
+            _owRigidbody.FreezeRotation();
+            transform.parent = dummyObj.transform;
+            var capsuleCollider = _animator.gameObject.AddComponent<CapsuleCollider>();
+            capsuleCollider.center = _capsuleCollider.center;
+            capsuleCollider.height = _capsuleCollider.height;
+            capsuleCollider.radius = _capsuleCollider.radius;
+            _capsuleCollider.enabled = false;
+        }
+
+        public void EnableRigidbody() {
+            var dummyObj = _animator.transform.parent.gameObject;
+            _animator.transform.parent = transform;
+            _animator.transform.localPosition = Vector3.zero;
+            _animator.transform.localEulerAngles = Vector3.zero;
+            _owRigidbody.UnfreezePosition();
+            _owRigidbody.UnfreezeRotation();
+            _owRigidbody.Unsuspend();
+            transform.parent = null;
+            Destroy(dummyObj);
+            Destroy(_animator.GetComponent<CapsuleCollider>());
+            _capsuleCollider.enabled = true;
         }
 
         void Update() {
