@@ -169,6 +169,10 @@ namespace TravelersLocomotionPack {
         }
 
         public void DisableRigidbody(Transform newParent) {
+            if(transform.parent != null && transform.parent.name == "Dummy") {
+                return;
+            }
+
             var dummyObj = new GameObject("Dummy");
             dummyObj.transform.parent = newParent;
             dummyObj.transform.position = transform.position;
@@ -186,14 +190,20 @@ namespace TravelersLocomotionPack {
         }
 
         public void EnableRigidbody() {
+            if(transform.parent == null) {
+                return;
+            }
+
             var dummyObj = _animator.transform.parent.gameObject;
-            _animator.transform.parent = transform;
-            _animator.transform.localPosition = Vector3.zero;
-            _animator.transform.localEulerAngles = Vector3.zero;
             _owRigidbody.UnfreezePosition();
             _owRigidbody.UnfreezeRotation();
             _owRigidbody.Unsuspend();
             transform.parent = null;
+            _owRigidbody.MoveToPosition(dummyObj.transform.position);
+            _owRigidbody.MoveToRotation(dummyObj.transform.rotation);
+            _animator.transform.parent = transform;
+            _animator.transform.localPosition = Vector3.zero;
+            _animator.transform.localEulerAngles = Vector3.zero;
             Destroy(dummyObj);
             Destroy(_animator.GetComponent<CapsuleCollider>());
             _capsuleCollider.enabled = true;

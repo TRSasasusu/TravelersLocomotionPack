@@ -130,6 +130,14 @@ namespace TravelersLocomotionPack {
             _gabbro.Sitting();
         }
 
+        public void GabbroDisableRigidbody(Transform newParent) {
+            _gabbro.DisableRigidbody(newParent);
+        }
+
+        public void GabbroEnableRigidbody() {
+            _gabbro.EnableRigidbody();
+        }
+
         public void RiebeckInitialize(GameObject riebeck) {
             _originalRiebeck = riebeck;
 
@@ -201,6 +209,14 @@ namespace TravelersLocomotionPack {
             else {
                 _riebeck.SittingWithoutLegCrossing();
             }
+        }
+
+        public void RiebeckDisableRigidbody(Transform newParent) {
+            _riebeck.DisableRigidbody(newParent);
+        }
+
+        public void RiebeckEnableRigidbody() {
+            _riebeck.EnableRigidbody();
         }
 
         IEnumerator SetAlignment(GameObject obj, Action<GameObject> callback) {
