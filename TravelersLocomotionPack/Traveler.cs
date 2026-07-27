@@ -187,6 +187,27 @@ namespace TravelersLocomotionPack {
             capsuleCollider.height = _capsuleCollider.height;
             capsuleCollider.radius = _capsuleCollider.radius;
             _capsuleCollider.enabled = false;
+
+            var conversationZonePos = _conversationZone.transform.localPosition;
+            var conversationZoneRot = _conversationZone.transform.localEulerAngles;
+            _conversationZone.transform.parent = dummyObj.transform;
+            _conversationZone.transform.localPosition = conversationZonePos;
+            _conversationZone.transform.localEulerAngles = conversationZoneRot;
+
+            var focalPoint = _conversationZone.GetComponent<CharacterDialogueTree>()._attentionPoint;
+            if(focalPoint != null) {
+                var focalPointPos = focalPoint.transform.localPosition;
+                var focalPointRot = focalPoint.transform.localEulerAngles;
+                focalPoint.transform.parent = dummyObj.transform;
+                focalPoint.transform.localPosition = focalPointPos;
+                focalPoint.transform.localEulerAngles = focalPointRot;
+            }
+
+            var audioSignalPos = AudioSignal.transform.localPosition;
+            var audioSignalRot = AudioSignal.transform.localEulerAngles;
+            AudioSignal.transform.parent = dummyObj.transform;
+            AudioSignal.transform.localPosition = audioSignalPos;
+            AudioSignal.transform.localEulerAngles = audioSignalRot;
         }
 
         public void EnableRigidbody() {
@@ -204,6 +225,28 @@ namespace TravelersLocomotionPack {
             _animator.transform.parent = transform;
             _animator.transform.localPosition = Vector3.zero;
             _animator.transform.localEulerAngles = Vector3.zero;
+
+            var conversationZonePos = _conversationZone.transform.localPosition;
+            var conversationZoneRot = _conversationZone.transform.localEulerAngles;
+            _conversationZone.transform.parent = transform;
+            _conversationZone.transform.localPosition = conversationZonePos;
+            _conversationZone.transform.localEulerAngles = conversationZoneRot;
+
+            var focalPoint = _conversationZone.GetComponent<CharacterDialogueTree>()._attentionPoint;
+            if(focalPoint != null) {
+                var focalPointPos = focalPoint.transform.localPosition;
+                var focalPointRot = focalPoint.transform.localEulerAngles;
+                focalPoint.transform.parent = transform;
+                focalPoint.transform.localPosition = focalPointPos;
+                focalPoint.transform.localEulerAngles = focalPointRot;
+            }
+
+            var audioSignalPos = AudioSignal.transform.localPosition;
+            var audioSignalRot = AudioSignal.transform.localEulerAngles;
+            AudioSignal.transform.parent = transform;
+            AudioSignal.transform.localPosition = audioSignalPos;
+            AudioSignal.transform.localEulerAngles = audioSignalRot;
+
             Destroy(dummyObj);
             Destroy(_animator.GetComponent<CapsuleCollider>());
             _capsuleCollider.enabled = true;
